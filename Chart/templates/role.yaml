@@ -1,0 +1,12 @@
+################################################################################
+# Copyright ContinuousC. Licensed under the "Elastic License 2.0".             #
+################################################################################
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: continuousc
+rules:
+  - apiGroups: ["*"]
+    resources: ["*"]
+    verbs: ["get", "watch", "list", "create", "patch"]

@@ -1,0 +1,19 @@
+{
+  "lsp": {
+    "rust-analyzer": {
+      "initialization_options": {
+        "check": {
+          "command": "clippy"
+        },
+        "linkedProjects": [
+          "./RelationGraph/Cargo.toml",
+          "./PrometheusSchema/Cargo.toml",
+          "./DBDaemon/Source/Rust/Cargo.toml",
+          "./K8sDiscovery/Discovery/Cargo.toml",
+          "./JaegerDiscovery/Cargo.toml",
+          "./JaegerAnomalyDetection/Cargo.toml"
+        ]
+      }
+    }
+  }
+}

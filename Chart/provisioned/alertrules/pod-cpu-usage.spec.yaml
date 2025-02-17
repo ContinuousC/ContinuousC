@@ -1,0 +1,34 @@
+################################################################################
+# Copyright ContinuousC. Licensed under the "Elastic License 2.0".             #
+################################################################################
+
+!custom
+alert: pod-cpu-usage
+annotations:
+  description:
+  runbook_url:
+  summary: "pod {{ $$labels.namespace }} : {{ $$labels.pod }} has high cpu usage ($value > $params.min)"
+spec:
+  item: kubelet-metrics-cadvisor:podCpu
+  expr: rate(container_cpu_usage_seconds_total[5m]) > $min
+  params:
+    min:
+      kind: threshold
+      type: !quantity
+        dimension: dimensionless
+default:
+  for: 15m
+  labels: {}
+  selectors: {}
+  params:
+    instance: "worst"
+    params: {}
+    thresholds:
+      warning:
+        min:
+          value: 0.95
+          unit: ""
+      critical:
+        min:
+          value: 0.98
+          unit: ""

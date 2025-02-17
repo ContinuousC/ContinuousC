@@ -1,0 +1,79 @@
+################################################################################
+# Copyright ContinuousC. Licensed under the "Elastic License 2.0".             #
+################################################################################
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: jaeger-discovery
+  labels:
+    app.kubernetes.io/name: jaeger-discovery
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    tenant: {{ .Values.continuousc.tenant }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: jaeger-discovery
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      tenant: {{ .Values.continuousc.tenant }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: jaeger-discovery
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        tenant: {{ .Values.continuousc.tenant }}
+    spec:
+      containers:
+        - name: jaeger-discovery
+          imagePullPolicy: Always
+          image: "{{ required "missing registry name" .Values.continuousc.registry }}/{{ .Values.continuousc.c9c.jaegerDiscovery.image }}:{{ .Values.continuousc.c9c.jaegerDiscovery.tag }}"
+          command:
+            - "/usr/bin/jaeger-discovery"
+            - --state=/var/lib/jaeger-discovery/
+            - --es-ca=/etc/opensearch/tls/ca.crt
+            - --es-cert=/etc/opensearch/tls/tls.crt
+            - --es-key=/etc/opensearch/tls/tls.key
+            - --es-url=https://opensearch-cluster-master:9200
+            - --rg-url=http://relation-graph-engine/api/
+          env:
+            - name: "RUST_BACKTRACE"
+              value: "1"
+            - name: "RUST_LOG"
+              value: "debug"
+          volumeMounts:
+            - name: jaeger-discovery-state
+              mountPath: /var/lib/jaeger-discovery
+            - name: opensearch-admin
+              readOnly: true
+              mountPath: /etc/opensearch/tls
+            - name: continuousc-ca
+              readOnly: true
+              mountPath: /etc/continuousc/tls
+          resources:
+            requests:
+              cpu: 0.1
+              memory: "512Mi"
+      imagePullSecrets:
+        - name: private-registry
+      volumes:
+        - name: jaeger-discovery-state
+          persistentVolumeClaim:
+            claimName: jaeger-discovery-state
+        - name: opensearch-admin
+          secret:
+            secretName: opensearch-admin
+        - name: continuousc-ca
+          secret:
+            secretName: continuousc-ca
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jaeger-discovery-state
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500M

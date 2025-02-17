@@ -1,0 +1,62 @@
+{
+  "name": "Overview",
+  "metrics": {},
+  "panels": [
+    [
+      {
+        "name": "Kubernetes",
+        "documentation": "",
+        "widgets": [
+          [
+            {
+              "itemType": "kubernetes/cluster",
+              "name": "Cluster",
+              "documentation": "",
+              "widget_type": "status"
+            },
+            {
+              "itemType": "kubernetes/namespace",
+              "name": "Namespace",
+              "documentation": "",
+              "widget_type": "status"
+            }
+          ],
+          [
+            {
+              "itemType": "kubernetes/pod",
+              "name": "Pod",
+              "documentation": "",
+              "widget_type": "status"
+            },
+            {
+              "itemType": "kubernetes/container",
+              "name": "Container",
+              "documentation": "",
+              "widget_type": "status"
+            }
+          ]
+        ]
+      },
+      {
+        "name": "Applications",
+        "documentation": "",
+        "widgets": [
+          [
+            {
+              "itemType": "jaeger/service",
+              "name": "Service",
+              "documentation": "",
+              "widget_type": "status"
+            },
+            {
+              "itemType": "jaeger/operation",
+              "name": "Operation",
+              "documentation": "",
+              "widget_type": "status"
+            }
+          ]
+        ]
+      }
+    ]
+  ]
+}

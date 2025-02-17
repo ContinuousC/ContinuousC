@@ -1,0 +1,48 @@
+################################################################################
+# Copyright ContinuousC. Licensed under the "Elastic License 2.0".             #
+################################################################################
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app.kubernetes.io/name: frontend
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    tenant: {{ .Values.continuousc.tenant }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: frontend
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      tenant: {{ .Values.continuousc.tenant }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: frontend
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        tenant: {{ .Values.continuousc.tenant }}
+    spec:
+      imagePullSecrets:
+        - name: private-registry
+      containers:
+        - name: frontend
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            requests:
+              cpu: 0.1
+              memory: "512Mi"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          image: "{{ required "Need imageRegistryBase name" .Values.continuousc.registry }}/{{ .Values.continuousc.c9c.frontend.image }}:{{ .Values.continuousc.c9c.frontend.tag }}"

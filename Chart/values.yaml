@@ -1,0 +1,287 @@
+################################################################################
+# Copyright ContinuousC. Licensed under the "Elastic License 2.0".             #
+################################################################################
+
+continuousc:
+  registry: "gitea.contc/continuousc"
+  tenant: demo
+  prometheusTenant: demo
+  domain: continuousc.com
+  auth:
+    subDomain: app
+    namespace: auth
+  sso:
+    subDomain: sso
+    realm: continuousc
+  documentationSubDomain: docs
+  c9c:
+    frontend:
+      image: frontend
+      tag: '0.0.3-acc.85'
+    dbdaemon:
+      image: dbdaemon
+      tag: '0.1.11-acc.4'
+    relationGraphEngine:
+      image: relation-graph-engine
+      tag: '0.1.5-acc.52'
+    jaegerDiscovery:
+      image: "jaeger-discovery"
+      tag: '0.1.0-acc.18'
+    jaegerAnomalyDetection:
+      image: "jaeger-anomaly-detection"
+      tag: '0.1.1-acc.27'
+
+grafana:
+  #https://github.com/grafana/grafana/issues/58608
+  env:
+    JAEGER_AGENT_PORT: ""
+    GF_SECURITY_ADMIN_USER: false
+    GF_SECURITY_DISABLE_INITIAL_ADMIN_CREATION: true
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "100Mi"
+  rbac:
+    namespaced: true
+  fullnameOverride: grafana
+  testFramework:
+    enabled: false
+  extraSecretMounts:
+    - name: postgresql
+      mountPath: /etc/secrets/postgresql
+      secretName: postgresql
+  sidecar:
+    datasources:
+      enabled: true
+      resource: secret
+      initDatasources: true
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      labelValue: "1"
+      folderAnnotation: grafana_folder
+      provider:
+        foldersFromFilesStructure: true
+  plugins:
+    - grafana-opensearch-datasource
+  grafana.ini:
+    analytics:
+      enabled: false
+      reporting_enabled: false
+      check_for_updates: false
+      check_for_plugin_updates: false
+      feedback_links_enabled: false
+    server:
+      root_url: "%(protocol)s://%(domain)s:%(http_port)s/grafana"
+      serve_from_sub_path: true
+    security:
+      cookie_secure: true
+      allow_embedding: true
+      strict_transport_security: true
+      disable_initial_admin_creation: true
+    database:
+      type: postgres
+      host: postgresql
+      name: continuousc
+      user: continuousc
+      password: $__file{/etc/secrets/postgresql/password}
+    users:
+      allow_sign_up: false
+      auto_assign_org_role: Viewer
+      default_theme: system
+    auth:
+      disable_login_form: true
+      disable_signout_menu: true
+    auth.proxy:
+      enabled: true
+      header_name: X-PROXY-USER
+      auto_sign_up: true
+      whitelist: "10.0.0.0/8"
+      headers: Name:X-PROXY-NAME Role:X-PROXY-GRAFANA-ROLE Email:X-PROXY-EMAIL
+    auth.basic:
+      enabled: false
+
+postgresql:
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "100Mi"
+  fullnameOverride: postgresql
+  auth:
+    enablePostgresUser: false
+    username: continuousc
+    database: continuousc
+    existingSecret: postgresql
+  serviceAccount:
+    create: false
+
+opensearch:
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "100Mi"
+  opensearchJavaOpts: "-Xmx2G -Xms2G"
+  securityConfig:
+    internalUsersSecret: opensearch-internal-users
+    configSecret: opensearch-security-config
+    rolesSecret: opensearch-roles
+    rolesMappingSecret: opensearch-rolesmapping
+  secretMounts:
+    - name: opensearch-tls
+      secretName: opensearch-tls
+      path: /usr/share/opensearch/config/tls
+      defaultMode: 0600
+    - name: opensearch-admin
+      secretName: opensearch-admin
+      path: /usr/share/opensearch/config/admin
+      defaultMode: 0600
+  envFrom:
+    - secretRef:
+        name: opensearch-admin-password
+  extraEnvs:
+    - name: DISABLE_INSTALL_DEMO_CONFIG
+      value: "true"
+  config:
+    opensearch.yml: |
+      plugins:
+        security:
+          ssl:
+            transport:
+              pemcert_filepath: tls/tls.crt
+              pemkey_filepath: tls/tls.key
+              pemtrustedcas_filepath: tls/ca.crt
+              enforce_hostname_verification: false
+            http:
+              enabled: true
+              pemcert_filepath: tls/tls.crt
+              pemkey_filepath: tls/tls.key
+              pemtrustedcas_filepath: tls/ca.crt
+          allow_unsafe_democertificates: true
+          allow_default_init_securityindex: true
+          nodes_dn:
+            - 'CN=OpenSearch Node,O=ContinuousC'
+          authcz:
+            admin_dn:
+              - 'CN=admin,OU=opensearch,O=ContinuousC,L=Leuven,ST=Vlaams Brabant,C=BE'
+          enable_snapshot_restore_privilege: true
+          check_snapshot_restore_write_privileges: true
+          restapi:
+            roles_enabled: ["all_access", "security_rest_api_access"]
+          system_indices:
+            enabled: true
+            indices: [".opendistro-alerting-config", ".opendistro-alerting-alert*", ".opendistro-anomaly-results*", ".opendistro-anomaly-detector*", ".opendistro-anomaly-checkpoints", ".opendistro-anomaly-detection-state", ".opendistro-reports-*", ".opendistro-notifications-*", ".opendistro-notebooks", ".opendistro-asynchronous-search-response*"]
+
+opensearch-dashboards:
+  fullnameOverride: opensearch-dashboards
+  rbac:
+    create: false
+  serviceAccount:
+    create: false
+  secretMounts:
+    - name: opensearch-tls
+      secretName: opensearch-tls
+      path: /usr/share/opensearch-dashboards/certs
+      defaultMode: 0640
+    - name: opensearch-dashboards-config
+      secretName: opensearch-dashboards-config
+      path: /usr/share/opensearch-dashboards/config
+      defaultMode: 0640
+
+jaeger:
+  fullnameOverride: jaeger
+  provisionDataStore:
+    cassandra: false
+    elasticsearch: false
+  storage:
+    type: elasticsearch
+    elasticsearch:
+      host: opensearch-cluster-master
+      scheme: https
+      port: 9200
+      user: admin
+      existingSecret: opensearch-admin-password
+      existingSecretKey: OPENSEARCH_INITIAL_ADMIN_PASSWORD
+  query:
+    basePath: /jaeger
+    cmdlineParams:
+      es.tls.enabled: true
+      es.tls.ca: "/tls/es.crt"
+      prometheus.query.support-spanmetrics-connector: true
+      query.max-clock-skew-adjustment: 30s
+    extraEnv:
+      - name: METRICS_STORAGE_TYPE
+        value: prometheus
+      - name: PROMETHEUS_SERVER_URL
+        value: http://cortex-query-frontend.cortex:8080/api/prom
+      - name: PROMETHEUS_QUERY_NORMALIZE_CALLS
+        value: "true"
+      - name: PROMETHEUS_QUERY_NORMALIZE_DURATION
+        value: "true"
+      - name: LOG_LEVEL
+        value: debug
+    extraSecretMounts:
+      - name: opensearch-tls
+        secretName: opensearch-tls
+        mountPath: /tls/es.crt
+        subPath: "ca.crt"
+        readOnly: true
+  collector:
+    service:
+      otlp:
+        grpc:
+          name: otlp-grpc
+        http:
+          name: otlp-http
+    cmdlineParams:
+      es.tls.enabled: true
+      es.tls.ca: "/tls/es.crt"
+    extraSecretMounts:
+      - name: opensearch-tls
+        secretName: opensearch-tls
+        mountPath: /tls/es.crt
+        subPath: "ca.crt"
+        readOnly: true
+  esIndexCleaner:
+    enabled: true
+    cmdlineParams:
+      es.tls.enabled: true
+      es.tls.ca: "/tls/es.crt"
+    extraSecretMounts:
+      - name: opensearch-tls
+        secretName: opensearch-tls
+        mountPath: /tls/es.crt
+        subPath: "ca.crt"
+        readOnly: true
+
+prometheus:
+  serviceAccounts:
+    create: false
+  configmapReload:
+    prometheus:
+      enabled: true
+  rbac:
+    create: false
+  fullnameOverride: prometheus
+  nameOverride: prometheus
+  server:
+    fullnameOverride: prometheus-server
+    statefulSet:
+      enabled: false
+    prefixURL: /prometheus
+    baseURL: /prometheus
+    configMapOverrideName: prometheus-server
+    # remoteRead:
+    #   - url: http://cortex-query-frontend.cortex:8080/prometheus/api/v1/read
+    #     read_recent: true
+    persistentVolume:
+      enabled: false
+  serverFiles:
+    prometheus.yml: {}
+  alertmanager:
+    enabled: false
+  prometheus-pushgateway:
+    enabled: false
+  prometheus-node-exporter:
+    enabled: false
+  kube-state-metrics:
+    enabled: false

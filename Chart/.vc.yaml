@@ -1,0 +1,22 @@
+api: 0.1.0
+artifacts:
+  continuousc-chart:
+    type: helm
+    pre_commit:
+      - run: helm dependency update
+    pre_tag:
+      - run: helm cm-push . continuousc
+    source:
+      type: helm
+      root: .
+      values:
+        - path: continuousc.c9c.frontend.tag
+          artifact: continuousc-frontend-image
+        - path: continuousc.c9c.relationGraphEngine.tag
+          artifact: relation-graph-engine
+        - path: continuousc.c9c.dbdaemon.tag
+          artifact: dbdaemon
+        - path: continuousc.c9c.jaegerDiscovery.tag
+          artifact: jaeger-discovery
+        - path: continuousc.c9c.jaegerAnomalyDetection.tag
+          artifact: jaeger-anomaly-detection-engine

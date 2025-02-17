@@ -1,0 +1,26 @@
+################################################################################
+# Copyright ContinuousC. Licensed under the "Elastic License 2.0".             #
+################################################################################
+
+!dynamic_traces
+alert: operation-anomaly-traces
+annotations:
+  description:
+  runbook_url:
+  summary:
+spec:
+  item: operation
+  metric: call_rate
+  short_term_param: mean
+  short_term_interval: 15m
+  long_term_param: mean
+  long_term_interval: 7d
+default:
+  for: 15m
+  labels: {}
+  selectors: {}
+  params:
+    offset: 1000
+    thresholds:
+      critical: 1.5
+      warning: 1.2

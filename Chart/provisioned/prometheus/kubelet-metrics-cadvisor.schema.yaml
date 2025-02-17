@@ -1,0 +1,414 @@
+################################################################################
+# Copyright ContinuousC. Licensed under the "Elastic License 2.0".             #
+################################################################################
+
+version: 0.1.0
+items:
+  node:
+    query:
+      instance: set
+      node: set
+    keys:
+    - instance
+    - node
+    items:
+    - pod
+    - nodeMetrics
+  pod:
+    query:
+      id: set
+      pod: set
+      namespace: set
+    keys:
+    - id
+    - pod
+    - namespace
+    items:
+    - podMetrics
+    - container
+    - pauseContainer
+  container:
+    query:
+      image: set
+      name: set
+      container: set
+    keys:
+    - container
+    - image
+    - name
+    items:
+    - containerCpu
+    - containerIo
+    - containerMemory
+    - containerUlimit
+    - containerOtherMetrics
+  containerCpu:
+    query:
+      cpu: !eq total
+    metrics:
+      cluster:cpu_usage_nosum:rate5m: !scalar {}
+      container_cpu_usage_seconds_total: !scalar {}
+  containerOtherMetrics:
+    query:
+      cpu: unset
+      device: unset
+      ulimit: unset
+      failure_type: unset
+      scope: unset
+    metrics:
+      container_cpu_cfs_periods_total: !scalar {}
+      container_cpu_cfs_throttled_periods_total: !scalar {}
+      container_last_seen: !scalar {}
+      container_memory_cache: !scalar {}
+      container_memory_failcnt: !scalar {}
+      container_memory_max_usage_bytes: !scalar {}
+      container_memory_rss: !scalar {}
+      container_memory_usage_bytes: !scalar {}
+      container_memory_working_set_bytes: !scalar {}
+      container_oom_events_total: !scalar {}
+      container_processes: !scalar {}
+      container_sockets: !scalar {}
+      container_start_time_seconds: !scalar {}
+      container_threads: !scalar {}
+      node_namespace_pod_container:container_memory_cache: !scalar {}
+      node_namespace_pod_container:container_memory_rss: !scalar {}
+      node_namespace_pod_container:container_memory_working_set_bytes: !scalar {}
+  pauseContainerCpu:
+    query:
+      cpu: set
+    keys:
+    - cpu
+    metrics:
+      container_cpu_usage_seconds_total: !scalar {}
+  podCpu:
+    query:
+      cpu: !eq total
+      device: unset
+      failure_type: unset
+      scope: unset
+    metrics:
+      container_cpu_usage_seconds_total: !scalar {}
+  pauseContainer:
+    query:
+      image: set
+      name: set
+      container: unset
+    keys:
+    - image
+    - name
+    items:
+    - pauseContainerCpu
+    - pauseContainerMemory
+    - pauseContainerIo
+    - pauseContainerInterface
+    - pauseContainerUlimit
+    - pauseContainerOtherMetrics
+  pauseContainerOtherMetrics:
+    query:
+      cpu: unset
+      device: unset
+      interface: unset
+      ulimit: unset
+      failure_type: unset
+      scope: unset
+    metrics:
+      container_last_seen: !scalar {}
+      container_memory_cache: !scalar {}
+      container_memory_failcnt: !scalar {}
+      container_memory_max_usage_bytes: !scalar {}
+      container_memory_rss: !scalar {}
+      container_memory_usage_bytes: !scalar {}
+      container_memory_working_set_bytes: !scalar {}
+      container_oom_events_total: !scalar {}
+      container_processes: !scalar {}
+      container_sockets: !scalar {}
+      container_start_time_seconds: !scalar {}
+      container_threads: !scalar {}
+      node_namespace_pod_container:container_memory_cache: !scalar {}
+      node_namespace_pod_container:container_memory_rss: !scalar {}
+      node_namespace_pod_container:container_memory_working_set_bytes: !scalar {}
+  pauseContainerInterface:
+    query:
+      cpu: unset
+      device: unset
+      interface: set
+    keys:
+    - interface
+    metrics:
+      container_network_receive_bytes_total: !scalar {}
+      container_network_receive_errors_total: !scalar {}
+      container_network_receive_packets_dropped_total: !scalar {}
+      container_network_receive_packets_total: !scalar {}
+      container_network_transmit_bytes_total: !scalar {}
+      container_network_transmit_errors_total: !scalar {}
+      container_network_transmit_packets_dropped_total: !scalar {}
+      container_network_transmit_packets_total: !scalar {}
+  pauseContainerIo:
+    query:
+      cpu: unset
+      device: set
+    keys:
+    - device
+    items:
+    - pauseContainerIoOperation
+    metrics:
+      container_fs_reads_bytes_total: !scalar
+        query:
+          operation: unset
+      container_fs_reads_total: !scalar
+        query:
+          operation: unset
+      container_fs_writes_bytes_total: !scalar
+        query:
+          operation: unset
+      container_fs_writes_total: !scalar
+        query:
+          operation: unset
+  podIo:
+    query:
+      device: set
+      cpu: unset
+    keys:
+    - device
+    items:
+    - podIoOperation
+    metrics:
+      container_fs_reads_bytes_total: !scalar
+        query:
+          operation: unset
+      container_fs_reads_total: !scalar
+        query:
+          operation: unset
+      container_fs_writes_bytes_total: !scalar
+        query:
+          operation: unset
+      container_fs_writes_total: !scalar
+        query:
+          operation: unset
+  containerIo:
+    query:
+      cpu: unset
+      device: set
+    keys:
+    - device
+    items:
+    - containerIoOperation
+    metrics:
+      container_fs_reads_bytes_total: !scalar
+        query:
+          operation: unset
+      container_fs_reads_total: !scalar
+        query:
+          operation: unset
+      container_fs_writes_bytes_total: !scalar
+        query:
+          operation: unset
+      container_fs_writes_total: !scalar
+        query:
+          operation: unset
+  pauseContainerIoOperation:
+    query:
+      major: set
+      minor: set
+      operation: set
+    keys:
+    - major
+    - minor
+    - operation
+    metrics:
+      container_blkio_device_usage_total: !scalar {}
+  podIoOperation:
+    query:
+      major: set
+      minor: set
+      operation: set
+    keys:
+    - major
+    - minor
+    - operation
+    metrics:
+      container_blkio_device_usage_total: !scalar {}
+  containerIoOperation:
+    query:
+      major: set
+      minor: set
+      operation: set
+    keys:
+    - major
+    - minor
+    - operation
+    metrics:
+      container_blkio_device_usage_total: !scalar {}
+  ioTotal:
+    query:
+      major: unset
+      minor: unset
+      operation: unset
+    metrics:
+      container_fs_reads_bytes_total: !scalar {}
+      container_fs_reads_total: !scalar {}
+      container_fs_writes_bytes_total: !scalar {}
+      container_fs_writes_total: !scalar {}
+  pauseContainerMemory:
+    query:
+      cpu: unset
+      device: unset
+      interface: unset
+      ulimit: unset
+      failure_type: set
+      scope: set
+    keys:
+    - failure_type
+    - scope
+    metrics:
+      container_memory_failures_total: !scalar {}
+  podMemory:
+    query:
+      failure_type: set
+      scope: set
+      cpu: unset
+      device: unset
+    keys:
+    - failure_type
+    - scope
+    metrics:
+      container_memory_failures_total: !scalar {}
+  containerMemory:
+    query:
+      failure_type: set
+      scope: set
+      cpu: unset
+      device: unset
+    keys:
+    - failure_type
+    - scope
+    metrics:
+      container_memory_failures_total: !scalar {}
+  nodeMetrics:
+    query:
+      id: unset
+      pod: unset
+      namespace: set
+    items:
+    - nodeInfo
+    - nodeOtherMetrics
+    metrics:
+      cadvisor_version_info: !scalar
+        query:
+          kernelVersion: set
+          osVersion: set
+  nodeInfo:
+    query:
+      boot_id: set
+      machine_id: set
+      system_uuid: set
+      kernelVersion: unset
+      osVersion: unset
+    keys:
+    - boot_id
+    - machine_id
+    - system_uuid
+    items:
+    - nodeInfoByMode
+    metrics:
+      machine_cpu_cores: !scalar
+        query:
+          mode: unset
+      machine_cpu_physical_cores: !scalar
+        query:
+          mode: unset
+      machine_cpu_sockets: !scalar
+        query:
+          mode: unset
+      machine_memory_bytes: !scalar
+        query:
+          mode: unset
+      machine_nvm_avg_power_budget_watts: !scalar
+        query:
+          mode: unset
+  nodeInfoByMode:
+    query:
+      mode: set
+    keys:
+    - mode
+    metrics:
+      machine_nvm_capacity: !scalar {}
+  nodeOtherMetrics:
+    query:
+      boot_id: unset
+      machine_id: unset
+      system_uuid: unset
+      kernelVersion: unset
+      osVersion: unset
+    metrics:
+      container_scrape_error: !scalar {}
+      machine_scrape_error: !scalar {}
+      scrape_duration_seconds: !scalar {}
+      scrape_samples_post_metric_relabeling: !scalar {}
+      scrape_samples_scraped: !scalar {}
+      scrape_series_added: !scalar {}
+      up: !scalar {}
+  podMetrics:
+    query:
+      image: unset
+      name: unset
+    items:
+    - podCpu
+    - podMemory
+    - podIo
+    - podOtherMetrics
+  podOtherMetrics:
+    query:
+      cpu: unset
+      device: unset
+      failure_type: unset
+      scope: unset
+    metrics:
+      container_cpu_cfs_periods_total: !scalar {}
+      container_cpu_cfs_throttled_periods_total: !scalar {}
+      container_last_seen: !scalar {}
+      container_memory_cache: !scalar {}
+      container_memory_failcnt: !scalar {}
+      container_memory_max_usage_bytes: !scalar {}
+      container_memory_rss: !scalar {}
+      container_memory_usage_bytes: !scalar {}
+      container_memory_working_set_bytes: !scalar {}
+      container_oom_events_total: !scalar {}
+      container_processes: !scalar {}
+      container_sockets: !scalar {}
+      container_start_time_seconds: !scalar {}
+      container_threads: !scalar {}
+  root:
+    items:
+    - node
+    - systemNamespace
+  systemNamespace:
+    query:
+      namespace: set
+      instance: unset
+      node: unset
+    keys:
+    - namespace
+    metrics:
+      count:up1: !scalar {}
+  pauseContainerUlimit:
+    query:
+      cpu: unset
+      device: unset
+      interface: unset
+      ulimit: set
+    keys:
+    - ulimit
+    metrics:
+      container_ulimits_soft: !scalar {}
+  containerUlimit:
+    query:
+      cpu: unset
+      device: unset
+      failure_type: unset
+      scope: unset
+      ulimit: set
+    keys:
+    - ulimit
+    metrics:
+      container_ulimits_soft: !scalar {}

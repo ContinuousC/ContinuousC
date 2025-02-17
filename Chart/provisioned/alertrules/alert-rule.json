@@ -1,0 +1,739 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AlertRuleTemplates",
+  "oneOf": [
+    {
+      "type": "object",
+      "required": [
+        "custom"
+      ],
+      "properties": {
+        "custom": {
+          "$ref": "#/definitions/AlertRuleTemplate_for_CustomAlertRuleForm"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "fixed_traces"
+      ],
+      "properties": {
+        "fixed_traces": {
+          "$ref": "#/definitions/AlertRuleTemplate_for_FixedTracesAlertRuleForm"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "dynamic_traces"
+      ],
+      "properties": {
+        "dynamic_traces": {
+          "$ref": "#/definitions/AlertRuleTemplate_for_DynamicTracesAlertRuleForm"
+        }
+      },
+      "additionalProperties": false
+    }
+  ],
+  "definitions": {
+    "AlertRuleConfig_for_CustomAlertRuleForm": {
+      "type": "object",
+      "required": [
+        "for",
+        "labels",
+        "params",
+        "selectors"
+      ],
+      "properties": {
+        "for": {
+          "$ref": "#/definitions/PromDuration"
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "params": {
+          "$ref": "#/definitions/CustomAlertRuleConfig"
+        },
+        "selectors": {
+          "$ref": "#/definitions/MetricSelector"
+        }
+      }
+    },
+    "AlertRuleConfig_for_DynamicTracesAlertRuleForm": {
+      "type": "object",
+      "required": [
+        "for",
+        "labels",
+        "params",
+        "selectors"
+      ],
+      "properties": {
+        "for": {
+          "$ref": "#/definitions/PromDuration"
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "params": {
+          "$ref": "#/definitions/DynamicTraceAlertRuleConfig"
+        },
+        "selectors": {
+          "$ref": "#/definitions/MetricSelector"
+        }
+      }
+    },
+    "AlertRuleConfig_for_FixedTracesAlertRuleForm": {
+      "type": "object",
+      "required": [
+        "for",
+        "labels",
+        "params",
+        "selectors"
+      ],
+      "properties": {
+        "for": {
+          "$ref": "#/definitions/PromDuration"
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "params": {
+          "$ref": "#/definitions/FixedTraceAlertRuleConfig"
+        },
+        "selectors": {
+          "$ref": "#/definitions/MetricSelector"
+        }
+      }
+    },
+    "AlertRuleTemplateName": {
+      "type": "string"
+    },
+    "AlertRuleTemplate_for_CustomAlertRuleForm": {
+      "type": "object",
+      "required": [
+        "alert",
+        "annotations",
+        "default",
+        "spec"
+      ],
+      "properties": {
+        "alert": {
+          "$ref": "#/definitions/AlertRuleTemplateName"
+        },
+        "annotations": {
+          "$ref": "#/definitions/Annotations_for_AnnotationTemplate"
+        },
+        "default": {
+          "$ref": "#/definitions/AlertRuleConfig_for_CustomAlertRuleForm"
+        },
+        "spec": {
+          "$ref": "#/definitions/CustomAlertRuleSpec"
+        }
+      }
+    },
+    "AlertRuleTemplate_for_DynamicTracesAlertRuleForm": {
+      "type": "object",
+      "required": [
+        "alert",
+        "annotations",
+        "default",
+        "spec"
+      ],
+      "properties": {
+        "alert": {
+          "$ref": "#/definitions/AlertRuleTemplateName"
+        },
+        "annotations": {
+          "$ref": "#/definitions/Annotations_for_AnnotationTemplate"
+        },
+        "default": {
+          "$ref": "#/definitions/AlertRuleConfig_for_DynamicTracesAlertRuleForm"
+        },
+        "spec": {
+          "$ref": "#/definitions/DynamicTraceAlertRuleSpec"
+        }
+      }
+    },
+    "AlertRuleTemplate_for_FixedTracesAlertRuleForm": {
+      "type": "object",
+      "required": [
+        "alert",
+        "annotations",
+        "default",
+        "spec"
+      ],
+      "properties": {
+        "alert": {
+          "$ref": "#/definitions/AlertRuleTemplateName"
+        },
+        "annotations": {
+          "$ref": "#/definitions/Annotations_for_AnnotationTemplate"
+        },
+        "default": {
+          "$ref": "#/definitions/AlertRuleConfig_for_FixedTracesAlertRuleForm"
+        },
+        "spec": {
+          "$ref": "#/definitions/FixedTraceAlertRuleSpec"
+        }
+      }
+    },
+    "AnnotationTemplate": {
+      "type": "string"
+    },
+    "Annotations_for_AnnotationTemplate": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AnnotationTemplate"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runbook_url": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AnnotationTemplate"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "summary": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AnnotationTemplate"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "CustomAlertRuleConfig": {
+      "type": "object",
+      "required": [
+        "instance",
+        "params",
+        "thresholds"
+      ],
+      "properties": {
+        "instance": {
+          "$ref": "#/definitions/InstanceAction"
+        },
+        "params": {
+          "$ref": "#/definitions/ParamValues"
+        },
+        "thresholds": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/ParamValues"
+          }
+        }
+      }
+    },
+    "CustomAlertRuleSpec": {
+      "type": "object",
+      "required": [
+        "expr",
+        "item",
+        "params"
+      ],
+      "properties": {
+        "expr": {
+          "$ref": "#/definitions/ExprImpl"
+        },
+        "item": {
+          "$ref": "#/definitions/QualifiedItemName"
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/ParamSpec"
+          }
+        }
+      }
+    },
+    "Dimension": {
+      "description": "Base dimensions. These can be considered a unit's \"type\". Conversion is possible only between units of the same dimension.",
+      "type": "string",
+      "enum": [
+        "length",
+        "mass",
+        "time",
+        "current",
+        "temperature",
+        "area",
+        "volume",
+        "speed",
+        "acceleration",
+        "potential",
+        "power",
+        "resistance",
+        "conductivity",
+        "absolute_humidity",
+        "frequency",
+        "time_square",
+        "information",
+        "operations",
+        "bandwidth",
+        "i_o_latency",
+        "i_o_performance",
+        "avg_op_size",
+        "fan_speed",
+        "dimensionless"
+      ]
+    },
+    "DynamicTraceAlertRuleConfig": {
+      "type": "object",
+      "required": [
+        "offset",
+        "thresholds"
+      ],
+      "properties": {
+        "offset": {
+          "type": "number",
+          "format": "double"
+        },
+        "thresholds": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      }
+    },
+    "DynamicTraceAlertRuleSpec": {
+      "type": "object",
+      "required": [
+        "item",
+        "long_term_interval",
+        "long_term_param",
+        "metric",
+        "short_term_interval",
+        "short_term_param"
+      ],
+      "properties": {
+        "item": {
+          "$ref": "#/definitions/TraceItem"
+        },
+        "long_term_interval": {
+          "$ref": "#/definitions/PromDuration"
+        },
+        "long_term_param": {
+          "$ref": "#/definitions/TraceParameter"
+        },
+        "metric": {
+          "$ref": "#/definitions/TraceMetric"
+        },
+        "short_term_interval": {
+          "$ref": "#/definitions/PromDuration"
+        },
+        "short_term_param": {
+          "$ref": "#/definitions/TraceParameter"
+        }
+      }
+    },
+    "ExprImpl": {
+      "type": "string"
+    },
+    "FixedTraceAlertRuleConfig": {
+      "type": "object",
+      "required": [
+        "quantile",
+        "thresholds"
+      ],
+      "properties": {
+        "quantile": {
+          "type": "string"
+        },
+        "thresholds": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "FixedTraceAlertRuleSpec": {
+      "type": "object",
+      "required": [
+        "interval",
+        "item",
+        "metric",
+        "param"
+      ],
+      "properties": {
+        "interval": {
+          "$ref": "#/definitions/PromDuration"
+        },
+        "item": {
+          "$ref": "#/definitions/TraceItem"
+        },
+        "metric": {
+          "$ref": "#/definitions/TraceMetric"
+        },
+        "param": {
+          "$ref": "#/definitions/TraceParameter"
+        }
+      }
+    },
+    "InstanceAction": {
+      "type": "string",
+      "enum": [
+        "individual",
+        "worst",
+        "best"
+      ]
+    },
+    "LabelSelector": {
+      "oneOf": [
+        {
+          "description": "Label is optional. This selector can be used to accept any value for the label, while making sure it is matched by the schema.",
+          "type": "string",
+          "enum": [
+            "opt"
+          ]
+        },
+        {
+          "description": "Match all non-empty values (label should be set).",
+          "type": "string",
+          "enum": [
+            "set"
+          ]
+        },
+        {
+          "description": "Match the empty value (Label should not be set).",
+          "type": "string",
+          "enum": [
+            "unset"
+          ]
+        },
+        {
+          "description": "Match a specific value.",
+          "type": "object",
+          "required": [
+            "eq"
+          ],
+          "properties": {
+            "eq": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "description": "Exclude a specific value.",
+          "type": "object",
+          "required": [
+            "ne"
+          ],
+          "properties": {
+            "ne": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "description": "Match a set of values.",
+          "type": "object",
+          "required": [
+            "in"
+          ],
+          "properties": {
+            "in": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "description": "Exclude a set of values.",
+          "type": "object",
+          "required": [
+            "not_in"
+          ],
+          "properties": {
+            "not_in": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "MetricSelector": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/LabelSelector"
+      }
+    },
+    "ParamKind": {
+      "type": "string",
+      "enum": [
+        "param",
+        "threshold"
+      ]
+    },
+    "ParamSpec": {
+      "type": "object",
+      "required": [
+        "kind",
+        "type"
+      ],
+      "properties": {
+        "kind": {
+          "$ref": "#/definitions/ParamKind"
+        },
+        "type": {
+          "$ref": "#/definitions/ParamTypeSpec"
+        }
+      }
+    },
+    "ParamTypeSpec": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "int"
+          ],
+          "properties": {
+            "int": {
+              "type": "object"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "quantity"
+          ],
+          "properties": {
+            "quantity": {
+              "type": "object",
+              "required": [
+                "dimension"
+              ],
+              "properties": {
+                "decimals": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "format": "uint8",
+                  "minimum": 0.0
+                },
+                "dimension": {
+                  "$ref": "#/definitions/Dimension"
+                },
+                "units": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "$ref": "#/definitions/Unit"
+                  }
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "prom_duration"
+          ],
+          "properties": {
+            "prom_duration": {
+              "type": "object"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "ParamValue": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        {
+          "type": "number",
+          "format": "double"
+        },
+        {
+          "$ref": "#/definitions/Quantity"
+        },
+        {
+          "$ref": "#/definitions/PromDuration"
+        }
+      ]
+    },
+    "ParamValues": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/ParamValue"
+      }
+    },
+    "PromDuration": {
+      "type": "string"
+    },
+    "QualifiedItemName": {
+      "type": "string"
+    },
+    "Quantity": {
+      "type": "object",
+      "required": [
+        "unit",
+        "value"
+      ],
+      "properties": {
+        "unit": {
+          "$ref": "#/definitions/Unit"
+        },
+        "value": {
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "ServiceTraceItem": {
+      "type": "string",
+      "enum": [
+        "max",
+        "min",
+        "mean",
+        "sum"
+      ]
+    },
+    "TraceItem": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "operation"
+          ]
+        },
+        {
+          "type": "object",
+          "required": [
+            "service"
+          ],
+          "properties": {
+            "service": {
+              "$ref": "#/definitions/ServiceTraceItem"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "TraceMetric": {
+      "type": "string",
+      "enum": [
+        "duration",
+        "busy",
+        "call_rate",
+        "error_rate"
+      ]
+    },
+    "TraceParameter": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "mean"
+          ]
+        },
+        {
+          "type": "object",
+          "required": [
+            "mean_plus_sd"
+          ],
+          "properties": {
+            "mean_plus_sd": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "mean_minus_sd"
+          ],
+          "properties": {
+            "mean_minus_sd": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "lower_bound"
+          ],
+          "properties": {
+            "lower_bound": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "higher_bound"
+          ],
+          "properties": {
+            "higher_bound": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "Unit": {
+      "type": "string"
+    }
+  }
+}

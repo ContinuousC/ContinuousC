@@ -1,0 +1,85 @@
+################################################################################
+# Copyright ContinuousC. Licensed under the "Elastic License 2.0".             #
+################################################################################
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: grafana-datasources
+  labels:
+    grafana_datasource: ""
+  annotations:
+    avp.kubernetes.io/path: "kv/data/continuousc/{{ .Values.continuousc.tenant }}"
+stringData:
+  prometheus.yaml: |-
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        uid: prometheus
+        access: proxy
+        url: http://cortex-nginx.cortex/api/prom
+        editable: false
+        isDefault: true
+        jsonData:
+            httpMethod: GET
+            manageAlerts: true
+            prometheusType: Cortex
+            prometheusVersion: 2.47.0
+            cacheLevel: 'Low'
+            httpHeaderName1: "X-Scope-OrgID"
+        secureJsonData:
+            httpHeaderValue1: "{{ .Values.continuousc.prometheusTenant }}"
+  opensearch.yaml: |-
+    apiVersion: 1
+    datasources:
+      - name: Opensearch-Jaeger
+        type: grafana-opensearch-datasource
+        access: proxy
+        uid: opensearch-jaeger
+        url: https://opensearch-cluster-master:9200
+        editable: false
+        basicAuth: true
+        basicAuthUser: admin
+        jsonData:
+          version: "2.9.0"
+          flavor: opensearch
+          timeField: "startTimeMillis"
+          database: "jaeger-span-*"
+          interval: "Daily"
+          timeInterval: "10s"
+          tlsSkipVerify: true
+          dataLinks:
+            - datasourceUid: jaeger
+              field: traceID
+              url: "$${__value.raw}"
+        secureJsonData:
+          basicAuthPassword: "<opensearch-admin-password>"
+  jaeger.yaml: |-
+    apiVersion: 1
+    datasources:
+      - name: Jaeger
+        type: jaeger
+        access: proxy
+        uid: jaeger
+        url: http://jaeger-query/jaeger
+        editable: false
+        jsonData:
+          tracesToLogsV2:
+            datasourceUid: opensearch-jaeger
+          tracesToMetrics:
+            datasourceUid: prometheus
+  alertmanager.yaml: |-
+    apiVersion: 1
+    datasources:
+      - name: Alertmanager
+        type: alertmanager
+        uid: alertmanager
+        url: http://cortex-nginx.cortex/api/prom
+        access: proxy
+        jsonData:
+          implementation: cortex
+          handleGrafanaManagedAlerts: false
+          httpHeaderName1: "X-Scope-OrgID"
+        secureJsonData:
+            httpHeaderValue1: "{{ .Values.continuousc.prometheusTenant }}"

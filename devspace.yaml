@@ -1,0 +1,107 @@
+version: v2beta1
+name: continuousc
+
+vars:
+  TENANT:
+    source: input
+    question: Which tenant do you want to use?
+    default: "demo"
+
+dependencies:
+  auth-chart:
+    path: Auth/Chart/devspace.yaml
+    pipeline: deploy
+    overwriteVars: true
+    namespace: auth-${USER}
+  oidc-client:
+    path: Auth/OIDCClient/devspace.yaml
+    pipeline: dev
+    overwriteVars: true
+    namespace: auth-${USER}
+  continuousc-chart:
+    path: Chart/devspace.yaml
+    overwriteVars: true
+    pipeline: deploy
+  relation-graph:
+    path: RelationGraph/devspace.yaml
+    overwriteVars: true
+    pipeline: dev
+  dbdaemon:
+    path: DBDaemon/devspace.yaml
+    overwriteVars: true
+    pipeline: dev
+  jaeger-discovery:
+    path: JaegerDiscovery/devspace.yaml
+    overwriteVars: true
+    pipeline: dev
+  jaeger-anomaly-detection:
+    path: JaegerAnomalyDetection/devspace.yaml
+    overwriteVars: true
+    pipeline: dev
+  frontend:
+    path: Frontend/devspace.yaml
+    overwriteVars: true
+    pipeline: dev
+  k8s-discovery-chart:
+    path: K8sDiscovery/Chart/devspace.yaml
+    pipeline: deploy
+    overwriteVars: true
+  k8s-discovery:
+    path: K8sDiscovery/Discovery/devspace.yaml
+    pipeline: dev
+    overwriteVars: true
+
+pipelines:
+  deploy:
+    run: |-
+      run_dependency_pipelines --pipeline deploy auth-chart continuousc-chart k8s-discovery-chart
+  dev:
+    flags:
+      - name: frontend
+        type: bool
+        description: "Frontend dev mode"
+      - name: relation-graph
+        type: bool
+        description: "Relation Graph dev mode"
+      - name: dbdaemon
+        type: bool
+        description: "DBDaemon dev mode"
+      - name: jaeger-discovery
+        type: bool
+        description: "Jaeger Discovery dev mode"
+      - name: jaeger-anomaly-detection
+        type: bool
+        description: "Jaeger Anomaly Detection dev mode"
+      - name: oidc-client
+        type: bool
+        description: "OIDC Client dev mode"
+      - name: k8s-discovery
+        type: bool
+        description: "K8s Discovery dev mode"
+    run: |-
+      deps=""
+      if [ $(get_flag "oidc-client") == "true" ]; then
+        deps="${deps} oidc-client"
+      fi
+      if [ $(get_flag "relation-graph") == "true" ]; then
+        deps="${deps} relation-graph"
+      fi
+      if [ $(get_flag "dbdaemon") == "true" ]; then
+        deps="${deps} dbdaemon"
+      fi
+      if [ $(get_flag "jaeger-discovery") == "true" ]; then
+        deps="${deps} jaeger-discovery"
+      fi
+      if [ $(get_flag "jaeger-anomaly-detection") == "true" ]; then
+        deps="${deps} jaeger-anomaly-detection"
+      fi
+      if [ $(get_flag "frontend") == "true" ]; then
+        deps="${deps} frontend"
+      fi
+      if [ $(get_flag "k8s-discovery") == "true" ]; then
+        deps="${deps} k8s-discovery"
+      fi
+      if [ -z "$deps" ]; then
+        deps="--all"
+      fi
+      run_dependency_pipelines --pipeline dev ${deps}

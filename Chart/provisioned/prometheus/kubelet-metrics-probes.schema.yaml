@@ -1,0 +1,72 @@
+################################################################################
+# Copyright ContinuousC. Licensed under the "Elastic License 2.0".             #
+################################################################################
+
+version: 0.1.0
+items:
+  byProbe:
+    query:
+      container: set
+      pod: set
+      probe_type: set
+    keys:
+    - container
+    - pod
+    - probe_type
+    items:
+    - probe
+    - probeResult
+  byNode:
+    query:
+      instance: set
+      node: set
+    keys:
+    - instance
+    - node
+    items:
+    - byProbe
+    - node
+  cluster:
+    query:
+      instance: unset
+      node: unset
+    metrics:
+      count:up1: !scalar {}
+  probe:
+    query:
+      pod_uid: unset
+      result: unset
+    metrics:
+      prober_probe_duration_seconds: !histogram {}
+  namespace:
+    query:
+      namespace: set
+    keys:
+    - namespace
+    items:
+    - byNode
+    - cluster
+  node:
+    query:
+      container: unset
+      pod: unset
+      probe_type: unset
+    metrics:
+      process_start_time_seconds: !scalar {}
+      scrape_duration_seconds: !scalar {}
+      scrape_samples_post_metric_relabeling: !scalar {}
+      scrape_samples_scraped: !scalar {}
+      scrape_series_added: !scalar {}
+      up: !scalar {}
+  probeResult:
+    query:
+      pod_uid: set
+      result: set
+    keys:
+    - pod_uid
+    - result
+    metrics:
+      prober_probe_total: !scalar {}
+  root:
+    items:
+    - namespace

@@ -1,0 +1,2230 @@
+{
+  "version": "0.1.0",
+  "requires": {
+    "discovery": {
+      "kubernetes": "^0.1"
+    },
+    "prometheus": {
+      "kube-state-metrics": "^0.1",
+      "kubelet-metrics": "^0.1",
+      "kubelet-metrics-cadvisor": "^0.1",
+      "kubelet-metrics-probes": "^0.1"
+    }
+  },
+  "items": {
+    "kubernetes/cluster": {
+      "prometheus": {
+        "kubelet-metrics-cadvisor:systemNamespace": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "property": "kubernetes/name"
+            }
+          }
+        },
+        "kubelet-metrics-probes:cluster": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "property": "kubernetes/name"
+            }
+          }
+        }
+      }
+    },
+    "kubernetes/config_map": {
+      "prometheus": {
+        "kube-state-metrics:configmap": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_id": null,
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    },
+                    "parent": null,
+                    "properties": null,
+                    "relations": null
+                  }
+		},
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_id": null,
+			"item_type": {
+                          "is": "kubernetes/cluster"
+			},
+			"parent": null,
+			"properties": null,
+			"relations": null
+                      }
+		    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "configmap": {
+              "property": "kubernetes/name"
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+                  }
+		},
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "kubernetes/container": {
+      "prometheus": {
+        "kube-state-metrics:container": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+                  }
+		},
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/namespace"
+			}
+		      }
+                    },
+                    "key": {
+                      "parent": {
+                        "item": {
+                          "match": {
+                            "item_type": {
+                              "is": "kubernetes/cluster"
+                            }
+			  }
+                        },
+                        "key": {
+                          "property": "kubernetes/name"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "container": {
+              "property": "kubernetes/name"
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/namespace"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "pod": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            }
+          }
+        },
+        "kube-state-metrics:containerResourceCpu": {
+          "group_by": null,
+          "keys": {
+            "container": {
+              "property": "kubernetes/name"
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/namespace"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "pod": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            }
+          }
+        },
+        "kube-state-metrics:containerResourceEphemeralStorage": {
+          "group_by": null,
+          "keys": {
+            "container": {
+              "property": "kubernetes/name"
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/namespace"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "pod": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            }
+          }
+        },
+        "kube-state-metrics:containerResourceMemory": {
+          "group_by": null,
+          "keys": {
+            "container": {
+              "property": "kubernetes/name"
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/namespace"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "pod": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            }
+          }
+        },
+        "kubelet-metrics:container-pod-uid": {
+          "group_by": null,
+          "keys": {
+            "container": {
+              "property": "kubernetes/name"
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/namespace"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "pod": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            }
+          }
+        },
+        "kubelet-metrics-cadvisor:containerCpu": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/namespace"
+			}
+		      }
+                    },
+                    "key": {
+                      "parent": {
+                        "item": {
+			  "match": {
+                            "item_type": {
+                              "is": "kubernetes/cluster"
+                            }
+			  }
+                        },
+                        "key": {
+                          "property": "kubernetes/name"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "container": {
+              "property": "kubernetes/name"
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/namespace"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "pod": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            }
+          }
+        },
+        "kubelet-metrics-cadvisor:containerIo": {
+          "group_by": [
+            "device"
+          ],
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/namespace"
+			}
+		      }
+                    },
+                    "key": {
+                      "parent": {
+                        "item": {
+			  "match": {
+                            "item_type": {
+                              "is": "kubernetes/cluster"
+                            }
+			  }
+                        },
+                        "key": {
+                          "property": "kubernetes/name"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "container": {
+              "property": "kubernetes/name"
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/namespace"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "pod": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            }
+          }
+        },
+        "kubelet-metrics-cadvisor:containerIoOperation": {
+          "group_by": [
+            "device",
+            "operation"
+          ],
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/namespace"
+			}
+		      }
+                    },
+                    "key": {
+                      "parent": {
+                        "item": {
+			  "match": {
+                            "item_type": {
+                              "is": "kubernetes/cluster"
+                            }
+			  }
+                        },
+                        "key": {
+                          "property": "kubernetes/name"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "container": {
+              "property": "kubernetes/name"
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/namespace"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "pod": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            }
+          }
+        },
+        "kubelet-metrics-cadvisor:containerMemory": {
+          "group_by": [
+            "container_type",
+            "scope"
+          ],
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/namespace"
+			}
+		      }
+                    },
+                    "key": {
+                      "parent": {
+                        "item": {
+			  "match": {
+                            "item_type": {
+                              "is": "kubernetes/cluster"
+                            }
+			  }
+                        },
+                        "key": {
+                          "property": "kubernetes/name"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "container": {
+              "property": "kubernetes/name"
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/namespace"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "pod": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            }
+          }
+        },
+        "kubelet-metrics-cadvisor:containerOtherMetrics": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/namespace"
+			}
+		      }
+                    },
+                    "key": {
+                      "parent": {
+                        "item": {
+			  "match": {
+                            "item_type": {
+                              "is": "kubernetes/cluster"
+                            }
+			  }
+                        },
+                        "key": {
+                          "property": "kubernetes/name"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "container": {
+              "property": "kubernetes/name"
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/namespace"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "pod": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            }
+          }
+        },
+        "kubelet-metrics-cadvisor:containerUlimit": {
+          "group_by": [
+            "ulimit"
+          ],
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/namespace"
+			}
+		      }
+                    },
+                    "key": {
+                      "parent": {
+                        "item": {
+			  "match": {
+                            "item_type": {
+                              "is": "kubernetes/cluster"
+                            }
+			  }
+                        },
+                        "key": {
+                          "property": "kubernetes/name"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "container": {
+              "property": "kubernetes/name"
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/namespace"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "pod": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "kubernetes/daemon_set": {
+      "prometheus": {
+        "kube-state-metrics:daemonset": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/cluster"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "daemonset": {
+              "property": "kubernetes/name"
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "kubernetes/deployment": {
+      "prometheus": {
+        "kube-state-metrics:deployment": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/cluster"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "deployment": {
+              "property": "kubernetes/name"
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "kubernetes/init_container": {
+      "prometheus": {
+        "kube-state-metrics:initContainer": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/namespace"
+			}
+		      }
+                    },
+                    "key": {
+                      "parent": {
+                        "item": {
+			  "match": {
+                            "item_type": {
+                              "is": "kubernetes/cluster"
+                            }
+			  }
+                        },
+                        "key": {
+                          "property": "kubernetes/name"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "container": {
+              "property": "kubernetes/name"
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/namespace"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "pod": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            }
+          }
+        },
+        "kube-state-metrics:initContainerResourceCpu": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/namespace"
+			}
+		      }
+                    },
+                    "key": {
+                      "parent": {
+                        "item": {
+			  "match": {
+                            "item_type": {
+                              "is": "kubernetes/cluster"
+                            }
+			  }
+                        },
+                        "key": {
+                          "property": "kubernetes/name"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "container": {
+              "property": "kubernetes/name"
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/namespace"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "pod": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            }
+          }
+        },
+        "kube-state-metrics:initContainerResourceMemory": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/namespace"
+			}
+		      }
+                    },
+                    "key": {
+                      "parent": {
+                        "item": {
+			  "match": {
+                            "item_type": {
+                              "is": "kubernetes/cluster"
+                            }
+			  }
+                        },
+                        "key": {
+                          "property": "kubernetes/name"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "container": {
+              "property": "kubernetes/name"
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/namespace"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "pod": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/pod"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "kubernetes/job": {
+      "prometheus": {
+        "kube-state-metrics:job": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/cluster"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "job_name": {
+              "property": "kubernetes/name"
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "kubernetes/namespace": {
+      "prometheus": {
+        "kube-state-metrics:namespace": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/cluster"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "namespace": {
+              "property": "kubernetes/name"
+            }
+          }
+        }
+      }
+    },
+    "kubernetes/node": {
+      "prometheus": {
+        "kube-state-metrics:node": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/cluster"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "node": {
+              "property": "kubernetes/name"
+            }
+          }
+        },
+        "kube-state-metrics:nodeResourceCpu": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/cluster"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "node": {
+              "property": "kubernetes/name"
+            }
+          }
+        },
+        "kube-state-metrics:nodeResourceEphemeralStorage": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/cluster"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "node": {
+              "property": "kubernetes/name"
+            }
+          }
+        },
+        "kube-state-metrics:nodeResourceHugepages1Gi": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/cluster"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "node": {
+              "property": "kubernetes/name"
+            }
+          }
+        },
+        "kube-state-metrics:nodeResourceHugepages2Mi": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/cluster"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "node": {
+              "property": "kubernetes/name"
+            }
+          }
+        },
+        "kube-state-metrics:nodeResourceMemory": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/cluster"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "node": {
+              "property": "kubernetes/name"
+            }
+          }
+        },
+        "kube-state-metrics:nodeResourcePods": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/cluster"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "node": {
+              "property": "kubernetes/name"
+            }
+          }
+        },
+        "kubelet-metrics-cadvisor:nodeInfo": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/cluster"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "node": {
+              "property": "kubernetes/name"
+            }
+          }
+        },
+        "kubelet-metrics-cadvisor:nodeInfoByMode": {
+          "group_by": [
+            "mode"
+          ],
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/cluster"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "node": {
+              "property": "kubernetes/name"
+            }
+          }
+        },
+        "kubelet-metrics-cadvisor:nodeMetrics": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/cluster"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "node": {
+              "property": "kubernetes/name"
+            }
+          }
+        },
+        "kubelet-metrics-cadvisor:nodeOtherMetrics": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/cluster"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "node": {
+              "property": "kubernetes/name"
+            }
+          }
+        },
+        "kubelet-metrics-probes:node": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/cluster"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "node": {
+              "property": "kubernetes/name"
+            }
+          }
+        }
+      }
+    },
+    "kubernetes/persistent_volume": {
+      "prometheus": {
+        "kube-state-metrics:persistentvolume": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/cluster"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "persistentvolume": {
+              "property": "kubernetes/name"
+            }
+          }
+        }
+      }
+    },
+    "kubernetes/persistent_volume_claim": {
+      "prometheus": {
+        "kube-state-metrics:persistentvolumeclaim": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/cluster"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "persistentvolumeclaim": {
+              "property": "kubernetes/name"
+            }
+          }
+        }
+      }
+    },
+    "kubernetes/pod": {
+      "prometheus": {
+        "kube-state-metrics:pod": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/cluster"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "pod": {
+              "property": "kubernetes/name"
+            }
+          }
+        },
+        "kubelet-metrics-cadvisor:containerIo": {
+          "group_by": [
+            "container",
+            "device"
+          ],
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/cluster"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "pod": {
+              "property": "kubernetes/name"
+            }
+          }
+        },
+        "kubelet-metrics-cadvisor:pauseContainerInterface": {
+          "group_by": [
+            "interface"
+          ],
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/cluster"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "pod": {
+              "property": "kubernetes/name"
+            }
+          }
+        },
+        "kubelet-metrics-cadvisor:podCpu": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/cluster"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "pod": {
+              "property": "kubernetes/name"
+            }
+          }
+        },
+        "kubelet-metrics-cadvisor:podIo": {
+          "group_by": [
+            "device"
+          ],
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/cluster"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "pod": {
+              "property": "kubernetes/name"
+            }
+          }
+        },
+        "kubelet-metrics-cadvisor:podIoOperation": {
+          "group_by": [
+            "device",
+            "operation"
+          ],
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/cluster"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "pod": {
+              "property": "kubernetes/name"
+            }
+          }
+        },
+        "kubelet-metrics-cadvisor:podMemory": {
+          "group_by": [
+            "failure_type",
+            "scope"
+          ],
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/cluster"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "pod": {
+              "property": "kubernetes/name"
+            }
+          }
+        },
+        "kubelet-metrics-cadvisor:podOtherMetrics": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/cluster"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "pod": {
+              "property": "kubernetes/name"
+            }
+          }
+        }
+      }
+    },
+    "kubernetes/secret": {
+      "prometheus": {
+        "kube-state-metrics:secret": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/cluster"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "secret": {
+              "property": "kubernetes/name"
+            }
+          }
+        }
+      }
+    },
+    "kubernetes/service": {
+      "prometheus": {
+        "kube-state-metrics:service": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/cluster"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "service": {
+              "property": "kubernetes/name"
+            }
+          }
+        }
+      }
+    },
+    "kubernetes/stateful_set": {
+      "prometheus": {
+        "kube-state-metrics:statefulset": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "parent": {
+                    "item": {
+		      "match": {
+			"item_type": {
+                          "is": "kubernetes/cluster"
+			}
+		      }
+                    },
+                    "key": {
+                      "property": "kubernetes/name"
+                    }
+                  }
+                }
+              }
+            },
+            "namespace": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/namespace"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "statefulset": {
+              "property": "kubernetes/name"
+            }
+          }
+        }
+      }
+    },
+    "kubernetes/storage_class": {
+      "prometheus": {
+        "kube-state-metrics:storageclass": {
+          "group_by": null,
+          "keys": {
+            "cluster": {
+              "parent": {
+                "item": {
+		  "match": {
+                    "item_type": {
+                      "is": "kubernetes/cluster"
+                    }
+		  }
+                },
+                "key": {
+                  "property": "kubernetes/name"
+                }
+              }
+            },
+            "storageclass": {
+              "property": "kubernetes/name"
+            }
+          }
+        }
+      }
+    }
+  },
+  "relations": {}
+}

@@ -1,0 +1,49 @@
+kind: pipeline
+type: docker
+name: continuousc
+
+clone:
+  skip_verify: true
+
+environment:
+  DOCKER_HOST: unix:///var/run/docker.sock
+  BUILDKIT_NO_CLIENT_TOKEN: 1
+  DOCKER_BUILDKIT: 1
+
+volumes:
+  - name: dockerd
+    host:
+      path: /var/run/docker.sock
+
+steps:
+  - name: push-helm-chart-gitea
+    image: alpine/helm
+    when:
+      ref:
+        - refs/tags/continuousc-chart_v*
+    environment:
+      REGISTRY_URL: http://gitea-http.gitea:3000/api/packages/ContinuousC/helm
+      REGISTRY_PASSWORD:
+        from_secret: gitea-helm-registry-password
+      CHART_TAG: ${DRONE_TAG#continuousc-chart_v}
+    commands:
+      - helm plugin install https://github.com/chartmuseum/helm-push
+      - helm repo add gitea-continuousc $${REGISTRY_URL} --username ci --password $${REGISTRY_PASSWORD}
+      - helm cm-push Chart gitea-continuousc
+
+  - name: docs
+    image: plugins/docker
+    volumes:
+      - name: dockerd
+        path: /var/run/docker.sock
+    failure: ignore
+    environment:
+      MINIO_CREDENTIALS:
+        from_secret: MINIO_CREDENTIALS
+    settings:
+      daemon_off: true
+      dry_run: true
+      repo: continuousc-docs
+      target: docs
+      secrets_from_env:
+        - minio_credentials=MINIO_CREDENTIALS

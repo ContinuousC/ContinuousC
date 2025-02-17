@@ -1,0 +1,21 @@
+dependencies:
+- name: grafana
+  repository: https://grafana.github.io/helm-charts
+  version: 8.5.5
+- name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 16.0.1
+- name: opensearch
+  repository: https://opensearch-project.github.io/helm-charts
+  version: 2.14.0
+- name: opensearch-dashboards
+  repository: https://opensearch-project.github.io/helm-charts
+  version: 2.12.0
+- name: jaeger
+  repository: https://jaegertracing.github.io/helm-charts
+  version: 1.0.2
+- name: prometheus
+  repository: https://prometheus-community.github.io/helm-charts
+  version: 25.3.1
+digest: sha256:2b3b5788cab8dc523ca8bf1b2c8862ace453cc317ba8287af971a5cc1f0f6c0c
+generated: "2025-01-28T13:03:11.421285222Z"

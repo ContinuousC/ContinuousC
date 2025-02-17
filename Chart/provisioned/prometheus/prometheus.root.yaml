@@ -1,0 +1,58 @@
+################################################################################
+# Copyright ContinuousC. Licensed under the "Elastic License 2.0".             #
+################################################################################
+
+requires:
+  kubelet: 0.1
+  kube-state-metrics: 0.1
+  jaeger-anomaly-detection: 0.1
+items:
+  root:
+    items:
+      - kubelet
+      # - monitoring-tools-kube-prom-kubelet
+      - monitoring-kube-state-metrics
+      # - monitoring-cost-analyzer
+      - jaeger-anomaly-detection
+  kubelet:
+    query:
+      service: !set
+      cluster: !set
+      # prometheus: !set
+      # prometheus_replica: !set
+    keys:
+      - cluster
+      - service
+    items:
+      - kubelet:root
+  # monitoring-tools-kube-prom-kubelet:
+  #   query:
+  #     service: !eq monitoring-tools-kube-prom-kubelet
+  #     cluster: !set
+  #     # prometheus: !set
+  #     # prometheus_replica: !set
+  #   items:
+  #     - kubelet:root
+  monitoring-kube-state-metrics:
+    query:
+      job: !eq kube-state-metrics
+      alertname: !unset
+      cluster: !set
+      container: !set # kube-state-metrics
+      endpoint: !set # http
+      instance: !set # 10.0.0.241:8080
+      namespace: !opt # monitoring
+      pod: !set # monitoring-kube-state-metrics-6d77dd6dd6-9w6cs
+      service: !set # monitoring-kube-state-metrics
+    keys:
+      - cluster
+    items:
+      - kube-state-metrics:root
+  monitoring-cost-analyzer:
+    query:
+      service: !eq monitoring-cost-analyzer
+    items:
+      - kube-state-metrics:root
+  jaeger-anomaly-detection:
+    items:
+      - jaeger-anomaly-detection:root

@@ -1,0 +1,1786 @@
+{
+  "name": "Applications",
+  "svgSource": "/icons/application/application.svg",
+  "svgSourceDark": "/icons/application/application_dark.svg",
+  "elements": {
+    "internal": {
+      "item_types": ["jaeger/service", "jaeger/operation"],
+      "relation_types": [
+        "jaeger/service_invokes",
+        "jaeger/operation_invokes",
+        "jaeger/runs_on_container"
+      ]
+    },
+    "external": {
+      "item_types": ["kubernetes/container", "kubernetes/pod"],
+      "relation_types": ["kubernetes/pod-container"]
+    }
+  },
+  "topologies": {
+    "Services": {
+      "infoQuery": {
+        "relations": {
+          "jaeger/service_invokes": {
+            "metrics": {
+              "mean_duration": {
+                "item": "jaeger-anomaly-detection:service-relations-anomaly-immediate",
+                "expr": "trace_duration_mean { immediate=\"15m\" } > 0",
+                "labels": {
+                  "service_name": {
+                    "target": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/service" }
+                        }
+                      },
+                      "key": {
+                        "property": "jaeger/service_name"
+                      }
+                    }
+                  },
+                  "service_namespace": {
+                    "target": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/service" }
+                        }
+                      },
+                      "key": {
+                        "property": "jaeger/service_namespace"
+                      }
+                    }
+                  },
+                  "service_instance_id": {
+                    "target": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/service" }
+                        }
+                      },
+                      "key": {
+                        "property": "jaeger/service_instance_id"
+                      }
+                    }
+                  },
+                  "parent_service_name": {
+                    "source": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/service" }
+                        }
+                      },
+                      "key": {
+                        "property": "jaeger/service_name"
+                      }
+                    }
+                  },
+                  "parent_service_namespace": {
+                    "source": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/service" }
+                        }
+                      },
+                      "key": {
+                        "property": "jaeger/service_namespace"
+                      }
+                    }
+                  },
+                  "parent_service_instance_id": {
+                    "source": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/service" }
+                        }
+                      },
+                      "key": {
+                        "property": "jaeger/service_instance_id"
+                      }
+                    }
+                  }
+                }
+              },
+              "anomaly_score": {
+                "item": "jaeger-anomaly-detection:service-relations-anomaly-score",
+                "expr": "trace_duration_score { immediate=\"15m\", reference=\"7d\" } >= 1",
+                "labels": {
+                  "service_name": {
+                    "target": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/service" }
+                        }
+                      },
+                      "key": {
+                        "property": "jaeger/service_name"
+                      }
+                    }
+                  },
+                  "service_namespace": {
+                    "target": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/service" }
+                        }
+                      },
+                      "key": {
+                        "property": "jaeger/service_namespace"
+                      }
+                    }
+                  },
+                  "service_instance_id": {
+                    "target": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/service" }
+                        }
+                      },
+                      "key": {
+                        "property": "jaeger/service_instance_id"
+                      }
+                    }
+                  },
+                  "parent_service_name": {
+                    "source": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/service" }
+                        }
+                      },
+                      "key": {
+                        "property": "jaeger/service_name"
+                      }
+                    }
+                  },
+                  "parent_service_namespace": {
+                    "source": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/service" }
+                        }
+                      },
+                      "key": {
+                        "property": "jaeger/service_namespace"
+                      }
+                    }
+                  },
+                  "parent_service_instance_id": {
+                    "source": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/service" }
+                        }
+                      },
+                      "key": {
+                        "property": "jaeger/service_instance_id"
+                      }
+                    }
+                  }
+                }
+              },
+              "count": {
+                "item": "jaeger-anomaly-detection:service-relations-anomaly-immediate",
+                "expr": "trace_duration_count { immediate=\"15m\" } > 0",
+                "labels": {
+                  "service_name": {
+                    "target": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/service" }
+                        }
+                      },
+                      "key": {
+                        "property": "jaeger/service_name"
+                      }
+                    }
+                  },
+                  "service_namespace": {
+                    "target": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/service" }
+                        }
+                      },
+                      "key": {
+                        "property": "jaeger/service_namespace"
+                      }
+                    }
+                  },
+                  "service_instance_id": {
+                    "target": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/service" }
+                        }
+                      },
+                      "key": {
+                        "property": "jaeger/service_instance_id"
+                      }
+                    }
+                  },
+                  "parent_service_name": {
+                    "source": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/service" }
+                        }
+                      },
+                      "key": {
+                        "property": "jaeger/service_name"
+                      }
+                    }
+                  },
+                  "parent_service_namespace": {
+                    "source": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/service" }
+                        }
+                      },
+                      "key": {
+                        "property": "jaeger/service_namespace"
+                      }
+                    }
+                  },
+                  "parent_service_instance_id": {
+                    "source": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/service" }
+                        }
+                      },
+                      "key": {
+                        "property": "jaeger/service_instance_id"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "query": {
+        "root": "service",
+        "elements": {
+          "service": {
+            "items": {
+              "match": {
+                "item_type": {
+                  "in": ["jaeger/service"]
+                },
+                "properties": {
+                  "jaeger/service_namespace": {
+                    "string": {
+                      "template": "namespace"
+                    }
+                  },
+                  "jaeger/service_name": {
+                    "string": {
+                      "template": "service"
+                    }
+                  },
+                  "jaeger/service_instance_id": {
+                    "string": {
+                      "template": "instance"
+                    }
+                  }
+                }
+              }
+            },
+            "follow": [
+              {
+                "relation": {
+                  "match": {
+                    "relation_type": {
+                      "in": ["jaeger/service_invokes"]
+                    },
+                    "endpoint": "source"
+                  }
+                },
+                "element": "service"
+              },
+              {
+                "relation": {
+                  "match": {
+                    "relation_type": {
+                      "is": "jaeger/runs_on_container"
+                    },
+                    "endpoint": "source"
+                  }
+                },
+                "element": "container"
+              }
+            ]
+          },
+          "container": {
+            "items": {
+              "match": {
+                "item_type": {
+                  "is": "kubernetes/container"
+                },
+                "properties": {
+                  "kubernetes/name": {
+                    "string": {
+                      "template": "containerName"
+                    }
+                  }
+                }
+              }
+            },
+            "follow": [
+              {
+                "relation": {
+                  "match": {
+                    "relation_type": {
+                      "is": "kubernetes/pod-container"
+                    },
+                    "endpoint": "target"
+                  }
+                },
+                "element": "pod"
+              }
+            ]
+          },
+          "pod": {
+            "items": {
+              "match": {
+                "item_type": {
+                  "is": "kubernetes/pod"
+                },
+                "properties": {
+                  "kubernetes/name": {
+                    "string": {
+                      "template": "podName"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "template": {
+          "namespace": "strings",
+          "service": "strings",
+          "instance": "strings",
+          "containerName": "strings",
+          "podName": "strings"
+        }
+      },
+      "queryFilters": [
+        {
+          "name": "namespace",
+          "label": "Namespace",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        },
+        {
+          "name": "service",
+          "label": "Service",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        },
+        {
+          "name": "instance",
+          "label": "Instance",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        },
+        {
+          "name": "containerName",
+          "label": "Container",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        },
+        {
+          "name": "podName",
+          "label": "Pod",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        }
+      ],
+      "stylesheet": {
+        "items": [
+          {
+            "selector": {
+              "match": {
+                "properties": {
+                  "jaeger/service_name": {
+                    "string": {
+                      "equals": "continuousc-frontend"
+                    }
+                  }
+                }
+              }
+            },
+            "style": {
+              "icon": {
+                "light": "continuousc/frontend-light.svg",
+                "dark": "continuousc/frontend-dark.svg"
+              }
+            }
+          },
+          {
+            "selector": {
+              "match": {
+                "properties": {
+                  "jaeger/service_name": {
+                    "string": {
+                      "equals": "relation-graph-engine"
+                    }
+                  }
+                }
+              }
+            },
+            "style": {
+              "icon": {
+                "light": "continuousc/relation-graph-light.svg",
+                "dark": "continuousc/relation-graph-dark.svg"
+              }
+            }
+          },
+          {
+            "selector": {
+              "match": {
+                "properties": {
+                  "jaeger/service_name": {
+                    "string": {
+                      "equals": "dbdaemon"
+                    }
+                  }
+                }
+              }
+            },
+            "style": {
+              "icon": {
+                "light": "continuousc/dbdaemon-light.svg",
+                "dark": "continuousc/dbdaemon-dark.svg"
+              }
+            }
+          },
+          {
+            "selector": {
+              "match": {
+                "properties": {
+                  "jaeger/service_instance_id": {
+                    "string": {
+                      "equals": "tenant-mdp"
+                    }
+                  }
+                }
+              }
+            },
+            "style": {
+              "label_color": {
+                "dark": "yellow",
+                "light": "blue"
+              }
+            }
+          },
+          {
+            "selector": {
+              "match": {
+                "properties": {
+                  "jaeger/service_instance_id": {
+                    "string": {
+                      "equals": "tenant-demo"
+                    }
+                  }
+                }
+              }
+            },
+            "style": {
+              "label_color": {
+                "dark": "green",
+                "light": "green"
+              }
+            }
+          }
+        ],
+        "relations": [
+          {
+            "selector": {
+              "all": []
+            },
+            "style": {
+              "metric_size": {
+                "name": "Count",
+                "title": "The width of an edge represents the count as relative to other edge, where a bigger edge represent more counts",
+                "expr_name": "count",
+                "metric_range": {
+                  "scale": "linear",
+                  "min": { "fixed": 0 },
+                  "max": "auto"
+                },
+                "enabled": true
+              },
+              "metric_color": {
+                "name": "Anomaly score",
+                "title": "The color of an edge represents the anomaly score as relative to other edges, with interpolation from green (ok) to red (not ok)",
+                "expr_name": "anomaly_score",
+                "metric_range": {
+                  "scale": "linear",
+                  "min": { "fixed": 1 },
+                  "max": { "fixed": 5 }
+                },
+                "style_range": {
+                  "range": ["green", "red"],
+                  "default": "gray",
+                  "interpolate": true
+                },
+                "enabled": true
+              }
+            }
+          }
+        ]
+      }
+    },
+    "Operations": {
+      "infoQuery": {
+        "relations": {
+          "jaeger/operation_invokes": {
+            "metrics": {
+              "mean_duration": {
+                "item": "jaeger-anomaly-detection:operation-relations-anomaly-immediate",
+                "expr": "trace_duration_mean { immediate=\"15m\" } > 0",
+                "labels": {
+                  "operation_name": {
+                    "target": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/operation" }
+                        }
+                      },
+                      "key": {
+                        "property": "jaeger/operation_name"
+                      }
+                    }
+                  },
+                  "service_name": {
+                    "target": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/operation" }
+                        }
+                      },
+                      "key": {
+                        "parent": {
+                          "item": {
+                            "match": {
+                              "item_type": { "is": "jaeger/service" }
+                            }
+                          },
+                          "key": {
+                            "property": "jaeger/service_name"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "service_namespace": {
+                    "target": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/operation" }
+                        }
+                      },
+                      "key": {
+                        "parent": {
+                          "item": {
+                            "match": {
+                              "item_type": { "is": "jaeger/service" }
+                            }
+                          },
+                          "key": {
+                            "property": "jaeger/service_namespace"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "service_instance_id": {
+                    "target": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/operation" }
+                        }
+                      },
+                      "key": {
+                        "parent": {
+                          "item": {
+                            "match": {
+                              "item_type": { "is": "jaeger/service" }
+                            }
+                          },
+                          "key": {
+                            "property": "jaeger/service_instance_id"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "parent_operation_name": {
+                    "source": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/operation" }
+                        }
+                      },
+                      "key": {
+                        "property": "jaeger/operation_name"
+                      }
+                    }
+                  },
+                  "parent_service_name": {
+                    "source": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/operation" }
+                        }
+                      },
+                      "key": {
+                        "parent": {
+                          "item": {
+                            "match": {
+                              "item_type": { "is": "jaeger/service" }
+                            }
+                          },
+                          "key": {
+                            "property": "jaeger/service_name"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "parent_service_namespace": {
+                    "source": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/operation" }
+                        }
+                      },
+                      "key": {
+                        "parent": {
+                          "item": {
+                            "match": {
+                              "item_type": { "is": "jaeger/service" }
+                            }
+                          },
+                          "key": {
+                            "property": "jaeger/service_namespace"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "parent_service_instance_id": {
+                    "source": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/operation" }
+                        }
+                      },
+                      "key": {
+                        "parent": {
+                          "item": {
+                            "match": {
+                              "item_type": { "is": "jaeger/service" }
+                            }
+                          },
+                          "key": {
+                            "property": "jaeger/service_instance_id"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "anomaly_score": {
+                "item": "jaeger-anomaly-detection:operation-relations-anomaly-score",
+                "expr": "trace_duration_score { immediate=\"15m\", reference=\"7d\" } >= 1",
+                "labels": {
+                  "operation_name": {
+                    "target": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/operation" }
+                        }
+                      },
+                      "key": {
+                        "property": "jaeger/operation_name"
+                      }
+                    }
+                  },
+                  "service_name": {
+                    "target": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/operation" }
+                        }
+                      },
+                      "key": {
+                        "parent": {
+                          "item": {
+                            "match": {
+                              "item_type": { "is": "jaeger/service" }
+                            }
+                          },
+                          "key": {
+                            "property": "jaeger/service_name"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "service_namespace": {
+                    "target": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/operation" }
+                        }
+                      },
+                      "key": {
+                        "parent": {
+                          "item": {
+                            "match": {
+                              "item_type": { "is": "jaeger/service" }
+                            }
+                          },
+                          "key": {
+                            "property": "jaeger/service_namespace"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "service_instance_id": {
+                    "target": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/operation" }
+                        }
+                      },
+                      "key": {
+                        "parent": {
+                          "item": {
+                            "match": {
+                              "item_type": { "is": "jaeger/service" }
+                            }
+                          },
+                          "key": {
+                            "property": "jaeger/service_instance_id"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "parent_operation_name": {
+                    "source": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/operation" }
+                        }
+                      },
+                      "key": {
+                        "property": "jaeger/operation_name"
+                      }
+                    }
+                  },
+                  "parent_service_name": {
+                    "source": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/operation" }
+                        }
+                      },
+                      "key": {
+                        "parent": {
+                          "item": {
+                            "match": {
+                              "item_type": { "is": "jaeger/service" }
+                            }
+                          },
+                          "key": {
+                            "property": "jaeger/service_name"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "parent_service_namespace": {
+                    "source": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/operation" }
+                        }
+                      },
+                      "key": {
+                        "parent": {
+                          "item": {
+                            "match": {
+                              "item_type": { "is": "jaeger/service" }
+                            }
+                          },
+                          "key": {
+                            "property": "jaeger/service_namespace"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "parent_service_instance_id": {
+                    "source": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/operation" }
+                        }
+                      },
+                      "key": {
+                        "parent": {
+                          "item": {
+                            "match": {
+                              "item_type": { "is": "jaeger/service" }
+                            }
+                          },
+                          "key": {
+                            "property": "jaeger/service_instance_id"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "count": {
+                "item": "jaeger-anomaly-detection:operation-relations-anomaly-immediate",
+                "expr": "trace_duration_count { immediate=\"15m\" } > 0",
+                "labels": {
+                  "operation_name": {
+                    "target": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/operation" }
+                        }
+                      },
+                      "key": {
+                        "property": "jaeger/operation_name"
+                      }
+                    }
+                  },
+                  "service_name": {
+                    "target": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/operation" }
+                        }
+                      },
+                      "key": {
+                        "parent": {
+                          "item": {
+                            "match": {
+                              "item_type": { "is": "jaeger/service" }
+                            }
+                          },
+                          "key": {
+                            "property": "jaeger/service_name"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "service_namespace": {
+                    "target": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/operation" }
+                        }
+                      },
+                      "key": {
+                        "parent": {
+                          "item": {
+                            "match": {
+                              "item_type": { "is": "jaeger/service" }
+                            }
+                          },
+                          "key": {
+                            "property": "jaeger/service_namespace"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "service_instance_id": {
+                    "target": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/operation" }
+                        }
+                      },
+                      "key": {
+                        "parent": {
+                          "item": {
+                            "match": {
+                              "item_type": { "is": "jaeger/service" }
+                            }
+                          },
+                          "key": {
+                            "property": "jaeger/service_instance_id"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "parent_operation_name": {
+                    "source": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/operation" }
+                        }
+                      },
+                      "key": {
+                        "property": "jaeger/operation_name"
+                      }
+                    }
+                  },
+                  "parent_service_name": {
+                    "source": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/operation" }
+                        }
+                      },
+                      "key": {
+                        "parent": {
+                          "item": {
+                            "match": {
+                              "item_type": { "is": "jaeger/service" }
+                            }
+                          },
+                          "key": {
+                            "property": "jaeger/service_name"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "parent_service_namespace": {
+                    "source": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/operation" }
+                        }
+                      },
+                      "key": {
+                        "parent": {
+                          "item": {
+                            "match": {
+                              "item_type": { "is": "jaeger/service" }
+                            }
+                          },
+                          "key": {
+                            "property": "jaeger/service_namespace"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "parent_service_instance_id": {
+                    "source": {
+                      "item": {
+                        "match": {
+                          "item_type": { "is": "jaeger/operation" }
+                        }
+                      },
+                      "key": {
+                        "parent": {
+                          "item": {
+                            "match": {
+                              "item_type": { "is": "jaeger/service" }
+                            }
+                          },
+                          "key": {
+                            "property": "jaeger/service_instance_id"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "query": {
+        "root": "operation",
+        "elements": {
+          "operation": {
+            "items": {
+              "match": {
+                "item_type": {
+                  "in": ["jaeger/operation"]
+                },
+                "properties": {
+                  "jaeger/operation_name": {
+                    "string": {
+                      "template": "operation"
+                    }
+                  }
+                },
+                "parent": {
+                  "match": {
+                    "item_type": {
+                      "in": ["jaeger/service"]
+                    },
+                    "properties": {
+                      "jaeger/service_namespace": {
+                        "string": {
+                          "template": "namespace"
+                        }
+                      },
+                      "jaeger/service_name": {
+                        "string": {
+                          "template": "service"
+                        }
+                      },
+                      "jaeger/service_instance_id": {
+                        "string": {
+                          "template": "instance"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "follow": [
+              {
+                "relation": {
+                  "match": {
+                    "relation_type": {
+                      "in": ["jaeger/operation_invokes"]
+                    },
+                    "endpoint": "source"
+                  }
+                },
+                "element": "operation"
+              }
+            ]
+          }
+        },
+        "template": {
+          "namespace": "strings",
+          "service": "strings",
+          "instance": "strings",
+          "operation": "strings"
+        }
+      },
+      "queryFilters": [
+        {
+          "name": "namespace",
+          "label": "Namespace",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        },
+        {
+          "name": "service",
+          "label": "Service",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        },
+        {
+          "name": "instance",
+          "label": "Instance",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        },
+        {
+          "name": "operation",
+          "label": "Operation",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        }
+      ],
+      "stylesheet": {
+        "items": [
+          {
+            "selector": {
+              "match": {
+                "parent": {
+                  "match": {
+                    "properties": {
+                      "jaeger/service_name": {
+                        "string": {
+                          "equals": "continuousc-frontend"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "style": {
+              "icon": {
+                "light": "continuousc/frontend-light.svg",
+                "dark": "continuousc/frontend-dark.svg"
+              }
+            }
+          },
+          {
+            "selector": {
+              "match": {
+                "parent": {
+                  "match": {
+                    "properties": {
+                      "jaeger/service_name": {
+                        "string": {
+                          "equals": "relation-graph-engine"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "style": {
+              "icon": {
+                "light": "continuousc/relation-graph-light.svg",
+                "dark": "continuousc/relation-graph-dark.svg"
+              }
+            }
+          },
+          {
+            "selector": {
+              "match": {
+                "parent": {
+                  "match": {
+                    "properties": {
+                      "jaeger/service_name": {
+                        "string": {
+                          "equals": "dbdaemon"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "style": {
+              "icon": {
+                "light": "continuousc/dbdaemon-light.svg",
+                "dark": "continuousc/dbdaemon-dark.svg"
+              }
+            }
+          },
+          {
+            "selector": {
+              "match": {
+                "parent": {
+                  "match": {
+                    "properties": {
+                      "jaeger/service_instance_id": {
+                        "string": {
+                          "equals": "tenant-mdp"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "style": {
+              "label_color": {
+                "dark": "yellow",
+                "light": "blue"
+              }
+            }
+          },
+          {
+            "selector": {
+              "match": {
+                "parent": {
+                  "match": {
+                    "properties": {
+                      "jaeger/service_instance_id": {
+                        "string": {
+                          "equals": "tenant-demo"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "style": {
+              "label_color": {
+                "dark": "green",
+                "light": "green"
+              }
+            }
+          }
+        ],
+        "relations": [
+          {
+            "selector": {
+              "all": []
+            },
+            "style": {
+              "metric_size": {
+                "name": "Count",
+                "title": "The width of an edge represents the count as relative to other edge, where a bigger edge represent more counts",
+                "expr_name": "count",
+                "metric_range": {
+                  "scale": "linear",
+                  "min": { "fixed": 0 },
+                  "max": "auto"
+                },
+                "enabled": true
+              },
+              "metric_color": {
+                "name": "Anomaly score",
+                "title": "The color of an edge represents the anomaly score as relative to other edges, with interpolation from green (ok) to red (not ok)",
+                "expr_name": "anomaly_score",
+                "metric_range": {
+                  "scale": "linear",
+                  "min": { "fixed": 1 },
+                  "max": { "fixed": 5 }
+                },
+                "style_range": {
+                  "range": ["green", "red"],
+                  "default": "gray",
+                  "interpolate": true
+                },
+                "enabled": true
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "defaultTopology": "Services",
+  "defaultItemType": "jaeger/service",
+  "defaultTopologyFilters": {},
+  "itemTypes": {
+    "jaeger/service": {
+      "metrics": {},
+      "dashboards": {
+        "type_range": {
+          "panels": [
+            {
+              "name": "\"Self \" Duration",
+              "widgets": [
+                {
+                  "name": "Anomaly score",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "score",
+                    "metric": "duration",
+                    "aggr_factor": 0.5
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Async \"Self\" Busy Time",
+              "widgets": [
+                {
+                  "name": "Anomaly score",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "score",
+                    "metric": "busy",
+                    "aggr_factor": 0.5
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Error Rate",
+              "widgets": [
+                {
+                  "name": "Anomaly score",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "score",
+                    "metric": "error_rate",
+                    "aggr_factor": 0.5
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Call Rate",
+              "widgets": [
+                {
+                  "name": "Anomaly score",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "score",
+                    "metric": "call_rate",
+                    "aggr_factor": 0.5
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "instance": {
+          "panels": [
+            {
+              "name": "\"Self\" Duration",
+              "widgets": [
+                {
+                  "graph": "range",
+                  "name": "Anomaly score",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "score",
+                    "metric": "duration",
+                    "aggr_factor": 0.5
+                  }
+                }
+              ]
+            },
+            {
+              "name": "\"Self\" Duration by Operation",
+              "widgets": [
+                {
+                  "graph": "range",
+                  "name": "Anomaly score operation top",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "score",
+                    "metric": "duration",
+                    "aggr_factor": 0.5,
+                    "top": 5
+                  }
+                },
+                {
+                  "graph": "range",
+                  "name": "Average operation top",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "metric",
+                    "metric": "duration"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Async \"Self\" Busy Time",
+              "widgets": [
+                {
+                  "graph": "range",
+                  "name": "Anomaly score",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "score",
+                    "metric": "busy",
+                    "aggr_factor": 0.5
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Async \"Self\" Busy Time by Operation",
+              "widgets": [
+                {
+                  "graph": "range",
+                  "name": "Anomaly score operation top",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "score",
+                    "metric": "busy",
+                    "aggr_factor": 0.5,
+                    "top": 5
+                  }
+                },
+                {
+                  "graph": "range",
+                  "name": "Average operation top",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "metric",
+                    "metric": "busy"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Call Rate",
+              "widgets": [
+                {
+                  "graph": "range",
+                  "name": "Anomaly score",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "score",
+                    "metric": "call_rate",
+                    "aggr_factor": 0.5
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Call Rate by Operation",
+              "widgets": [
+                {
+                  "graph": "range",
+                  "name": "Anomaly score operation top",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "score",
+                    "metric": "call_rate",
+                    "aggr_factor": 0.5,
+                    "top": 5
+                  }
+                },
+                {
+                  "graph": "range",
+                  "name": "Average operation top",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "metric",
+                    "metric": "call_rate",
+                    "top": 5
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Error Rate",
+              "widgets": [
+                {
+                  "graph": "range",
+                  "name": "Anomaly score",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "score",
+                    "metric": "error_rate",
+                    "aggr_factor": 0.5
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Error Rate by Operation",
+              "widgets": [
+                {
+                  "graph": "range",
+                  "name": "Anomaly score operation top",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "score",
+                    "metric": "error_rate",
+                    "aggr_factor": 0.5
+                  }
+                },
+                {
+                  "graph": "range",
+                  "name": "Average operation top",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "metric",
+                    "metric": "error_rate",
+                    "top": 5
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "table": {
+        "column_order": [
+          { "property": "service_namespace" },
+          { "property": "service_name" },
+          { "property": "service_instance_id" },
+          { "property": "service_version" }
+        ],
+        "column_visibility": [
+          { "property": "service_namespace" },
+          { "property": "service_name" },
+          { "property": "service_instance_id" },
+          { "property": "service_version" }
+        ]
+      }
+    },
+    "jaeger/operation": {
+      "metrics": {},
+      "dashboards": {
+        "type_range": {
+          "panels": [
+            {
+              "name": "\"Self\" Duration",
+              "widgets": [
+                {
+                  "graph": "range",
+                  "name": "Anomaly score",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "score",
+                    "type": "average",
+                    "metric": "duration"
+                  }
+                },
+                {
+                  "graph": "range",
+                  "name": "Average",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "metric",
+                    "metric": "duration"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Async \"Self\" Busy Time",
+              "widgets": [
+                {
+                  "graph": "range",
+                  "name": "Anomaly score",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "score",
+                    "type": "average",
+                    "metric": "busy"
+                  }
+                },
+                {
+                  "graph": "range",
+                  "name": "Average",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "metric",
+                    "metric": "busy"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Error Rate",
+              "widgets": [
+                {
+                  "graph": "range",
+                  "name": "Anomaly score",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "score",
+                    "type": "average",
+                    "metric": "error_rate"
+                  }
+                },
+                {
+                  "graph": "range",
+                  "name": "Average",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "metric",
+                    "metric": "error_rate"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Call Rate",
+              "widgets": [
+                {
+                  "graph": "range",
+                  "name": "Anomaly score",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "score",
+                    "type": "average",
+                    "metric": "call_rate"
+                  }
+                },
+                {
+                  "graph": "range",
+                  "name": "Average",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "metric",
+                    "metric": "call_rate"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "instance": {
+          "panels": [
+            {
+              "name": "\"Self\" Duration",
+              "widgets": [
+                {
+                  "graph": "range",
+                  "name": "Anomaly score",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "score",
+                    "type": "average",
+                    "metric": "duration"
+                  }
+                },
+                {
+                  "graph": "range",
+                  "name": "Average",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "metric",
+                    "metric": "duration",
+                    "reference_interval": "7d"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Async \"Self\" Busy Time",
+              "widgets": [
+                {
+                  "graph": "range",
+                  "name": "Anomaly score",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "score",
+                    "type": "average",
+                    "metric": "busy"
+                  }
+                },
+                {
+                  "graph": "range",
+                  "name": "Average",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "metric",
+                    "metric": "busy",
+                    "reference_interval": "7d"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Call Rate",
+              "widgets": [
+                {
+                  "graph": "range",
+                  "name": "Anomaly score",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "score",
+                    "type": "average",
+                    "metric": "call_rate"
+                  }
+                },
+                {
+                  "graph": "range",
+                  "name": "Average",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "metric",
+                    "metric": "call_rate",
+                    "reference_interval": "7d"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Error Rate",
+              "widgets": [
+                {
+                  "graph": "range",
+                  "name": "Anomaly score",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "score",
+                    "type": "average",
+                    "metric": "error_rate"
+                  }
+                },
+                {
+                  "graph": "range",
+                  "name": "Average",
+                  "documentation": "",
+                  "widget_type": "anomaly_traces",
+                  "graph_type": {
+                    "graph": "metric",
+                    "metric": "error_rate",
+                    "reference_interval": "7d"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "table": {
+        "column_order": [
+          { "property": "operation_name" },
+          { "property": "service_namespace" },
+          { "property": "service_name" },
+          { "property": "service_instance_id" },
+          { "property": "service_version" }
+        ],
+        "column_visibility": [
+          { "property": "operation_name" },
+          { "property": "service_namespace" },
+          { "property": "service_name" },
+          { "property": "service_instance_id" },
+          { "property": "service_version" }
+        ]
+      }
+    }
+  }
+}

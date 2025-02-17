@@ -1,0 +1,147 @@
+################################################################################
+# Copyright ContinuousC. Licensed under the "Elastic License 2.0".             #
+################################################################################
+
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: cc-ca-issuer
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "0"
+    helm.sh/hook: pre-install
+    helm.sh/hook-weight: "0"
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: continuousc-ca
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "1"
+    helm.sh/hook: pre-install
+    helm.sh/hook-weight: "1"
+spec:
+  secretName: continuousc-ca
+  duration: 2160h0m0s # 90d
+  renewBefore: 360h0m0s # 15d
+  subject:
+    organizations:
+      - ContinuousC
+  commonName: ContinuousC CA
+  isCA: true
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS8
+    size: 2048
+  issuerRef:
+    name: cc-ca-issuer
+    kind: Issuer
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: cc-cert-issuer
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "2"
+    helm.sh/hook: pre-install
+    helm.sh/hook-weight: "2"
+spec:
+  ca:
+    secretName: continuousc-ca
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: dbdaemon
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "3"
+    helm.sh/hook: pre-install
+    helm.sh/hook-weight: "3"
+spec:
+  secretName: dbdaemon
+  duration: 2160h0m0s # 90d
+  renewBefore: 360h0m0s # 15d
+  subject:
+    organizations:
+      - ContinuousC
+  commonName: DbDaemon
+  # isCA: false
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS8
+    size: 2048
+  # usages:
+  #   - server auth
+  #   - client auth
+  dnsNames:
+    - dbdaemon
+    - dbdaemon-0
+    - localhost
+  issuerRef:
+    name: cc-cert-issuer
+    kind: Issuer
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: relation-graph-engine
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "3"
+    helm.sh/hook: pre-install
+    helm.sh/hook-weight: "3"
+spec:
+  secretName: relation-graph-engine
+  duration: 2160h0m0s # 90d
+  renewBefore: 360h0m0s # 15d
+  subject:
+    organizations:
+      - ContinuousC
+  commonName: Relation Graph Engine
+  # isCA: false
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS8
+    size: 2048
+  # usages:
+  #   - server auth
+  #   - client auth
+  dnsNames:
+    - relation-graph-engine
+    - relation-graph-engine-0
+    - localhost
+  issuerRef:
+    name: cc-cert-issuer
+    kind: Issuer
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: relation-graph-engine-client
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "3"
+    helm.sh/hook: pre-install
+    helm.sh/hook-weight: "3"
+spec:
+  secretName: relation-graph-engine-client
+  duration: 2160h0m0s # 90d
+  renewBefore: 360h0m0s # 15d
+  subject:
+    organizations:
+      - ContinuousC
+  commonName: relation-graph-engine-client
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS8
+    size: 2048
+  usages:
+    - client auth
+  issuerRef:
+    name: cc-cert-issuer
+    kind: Issuer

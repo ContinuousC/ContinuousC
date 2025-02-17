@@ -1,0 +1,45 @@
+################################################################################
+# Copyright ContinuousC. Licensed under the "Elastic License 2.0".             #
+################################################################################
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: provisioned-alertrules
+data:
+{{ (.Files.Glob "provisioned/alertrules/*.yaml").AsConfig | indent 2 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: provisioned-packages
+data:
+{{ (.Files.Glob "provisioned/packages/*.json").AsConfig | indent 2 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: provisioned-connections
+data:
+{{ (.Files.Glob "provisioned/connections/*.json").AsConfig | indent 2 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: provisioned-prometheus-schema
+data:
+{{ (.Files.Glob "provisioned/prometheus/*.yaml").AsConfig | indent 2 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: provisioned-views
+data:
+{{ (.Files.Glob "provisioned/views/*.json").AsConfig | indent 2 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: provisioned-dashboards
+data:
+{{ (.Files.Glob "provisioned/dashboards/*.json").AsConfig | indent 2 }}

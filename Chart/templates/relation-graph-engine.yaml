@@ -1,0 +1,158 @@
+################################################################################
+# Copyright ContinuousC. Licensed under the "Elastic License 2.0".             #
+################################################################################
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: relation-graph-engine
+  labels:
+    app.kubernetes.io/name: relation-graph-engine
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    tenant: {{ .Values.continuousc.tenant }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: relation-graph-engine
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      tenant: {{ .Values.continuousc.tenant }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: relation-graph-engine
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        tenant: {{ .Values.continuousc.tenant }}
+    spec:
+      containers:
+        - name: relation-graph-engine
+          imagePullPolicy: Always
+          image: "{{ required "Need imageRegistryBase name" .Values.continuousc.registry }}/{{ .Values.continuousc.c9c.relationGraphEngine.image }}:{{ .Values.continuousc.c9c.relationGraphEngine.tag }}"
+          command:
+            [
+              /usr/bin/relation-graph-engine,
+              --bind=0.0.0.0:80,
+              --db=dbdaemon:9999,
+              --certs=/usr/share/continuousc/certs/relation-graph-engine-client,
+              --ca=ca.crt,
+              --db-cert=tls.crt,
+              --db-key=tls.key,
+              "--prometheus-tenant={{ .Values.continuousc.prometheusTenant }}"
+            ]
+          env:
+            - name: "RUST_BACKTRACE"
+              value: "full"
+            - name: "RUST_LOG"
+              value: "debug"
+            - name: "OTEL_EXPORTER_OTLP_ENDPOINT"
+              value: "grpc://opentelemetry-collector:4317"
+            - name: "APP_VERSION"
+              value: "{{ .Chart.Version }}"
+            - name: "INSTANCE_ID"
+              value: "{{ .Values.continuousc.tenant }}.{{ .Values.continuousc.auth.subDomain }}.{{ .Values.continuousc.domain }}"
+            - name: "K8S_NODE_NAME"
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: "K8S_NAMESPACE_NAME"
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: "K8S_POD_NAME"
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: "K8S_POD_UID"
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
+            - name: "K8S_CONTAINER_NAME"
+              value: relation-graph-engine
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          volumeMounts:
+            - name: relation-graph-engine-client-cert
+              readOnly: true
+              mountPath: "/usr/share/continuousc/certs/relation-graph-engine-client"
+            - name: opensearch-cert
+              readOnly: true
+              mountPath: "/usr/share/continuousc/certs/opensearch"
+            - name: provisioned-packages
+              readOnly: true
+              mountPath: "/usr/share/continuousc/packages"
+            - name: provisioned-connections
+              readOnly: true
+              mountPath: "/usr/share/continuousc/connections"
+            - name: provisioned-prometheus-schema
+              readOnly: true
+              mountPath: "/usr/share/continuousc/prometheus"
+            - name: provisioned-alertrules
+              readOnly: true
+              mountPath: "/usr/share/continuousc/alertrules"
+            - name: provisioned-views
+              readOnly: true
+              mountPath: "/usr/share/continuousc/views"
+            - name: provisioned-dashboards
+              readOnly: true
+              mountPath: "/usr/share/continuousc/dashboards"
+          resources:
+            requests:
+              cpu: 0.1
+              memory: "512Mi"
+      imagePullSecrets:
+        - name: private-registry
+      volumes:
+        - name: relation-graph-engine-client-cert
+          secret:
+            secretName: relation-graph-engine-client
+        - name: opensearch-cert
+          secret:
+            secretName: opensearch-admin
+        - name: provisioned-packages
+          configMap:
+            name: provisioned-packages
+        - name: provisioned-connections
+          configMap:
+            name: provisioned-connections
+        - name: provisioned-prometheus-schema
+          configMap:
+            name: provisioned-prometheus-schema
+        - name: provisioned-alertrules
+          configMap:
+            name: provisioned-alertrules
+        - name: provisioned-views
+          configMap:
+            name: provisioned-views
+        - name: provisioned-dashboards
+          configMap:
+            name: provisioned-dashboards
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: relation-graph-engine
+  labels:
+    app.kubernetes.io/name: relation-graph-engine
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    tenant: {{ .Values.continuousc.tenant }}
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      targetPort: http
+      protocol: TCP
+      port: 80
+  selector:
+    app.kubernetes.io/name: relation-graph-engine
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    tenant: {{ .Values.continuousc.tenant }}

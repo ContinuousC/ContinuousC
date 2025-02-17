@@ -1,0 +1,100 @@
+################################################################################
+# Copyright ContinuousC. Licensed under the "Elastic License 2.0".             #
+################################################################################
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: opensearch-roles
+type: Opaque
+stringData:
+  roles.yml: |-
+    _meta:
+      type: "roles"
+      config_version: 2
+    editor:
+      reserved: true
+      cluster_permissions:
+      - "cluster_composite_ops_ro"
+      index_permissions:
+      - index_patterns:
+        - 'custom-*'
+        allowed_actions:
+        - "*"
+      tenant_permissions:
+      - tenant_patterns:
+        - "global_tenant"
+        allowed_actions:
+        - "kibana_all_read"
+    viewer:
+      reserved: true
+      cluster_permissions:
+      - "cluster_composite_ops_ro"
+      index_permissions:
+      - index_patterns:
+        - 'custom-*'
+        allowed_actions:
+        - "read"
+      tenant_permissions:
+      - tenant_patterns:
+        - "global_tenant"
+        allowed_actions:
+        - "kibana_all_read"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: opensearch-rolesmapping
+type: Opaque
+stringData:
+  roles_mapping.yml: |-
+    _meta:
+      type: "rolesmapping"
+      config_version: 2
+    editor:
+      reserved: true
+      backend_roles:
+      - "Editor"
+      hosts: []
+      users: []
+      and_backend_roles: []
+    viewer:
+      reserved: true
+      backend_roles:
+      - "Viewer"
+      hosts: []
+      users: []
+      and_backend_roles: []
+    all_access:
+      reserved: false
+      backend_roles:
+      - "admin"
+      - "Admin"
+      description: "Maps admin to all_access"
+    # own_index:
+    #   reserved: false
+    #   users:
+    #   - "*"
+    #   description: "Allow full access to an index named like the username"
+    # logstash:
+    #   reserved: false
+    #   backend_roles:
+    #   - "logstash"
+    kibana_user:
+      reserved: false
+      backend_roles:
+      - "kibanauser"
+      description: "Maps kibanauser to kibana_user"
+    readall:
+      reserved: false
+      backend_roles:
+      - "readall"
+    manage_snapshots:
+      reserved: false
+      backend_roles:
+      - "snapshotrestore"
+    kibana_server:
+      reserved: true
+      users:
+      - "kibanaserver"

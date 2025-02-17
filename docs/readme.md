@@ -1,0 +1,100 @@
+[![Build Status](https://drone.contc/api/badges/ContinuousC/ContinuousC/status.svg)](https://drone.contc/ContinuousC/ContinuousC)
+
+# ContinuousC Architecture
+
+[![Architecture Overview](ContinuousC%20architecture.svg)](https://excalidraw.com/#json=Nx9X3Iu7My9e-ZXnb8tbt,RszT-6qDpQM8lW01WyUwHw)
+
+## Components
+
+### [MetalLB](https://metallb.io/)
+  
+MetallB is used to create an external load balancer for on prem k8s
+clusters. The configuration for deployment can be found
+[here](https://gitea.contc/ContinuousC/apps/src/branch/main/addons/metallb).
+
+### [Traefik](https://doc.traefik.io/traefik/)
+
+Traefik is our ingresscontroller that manage ingress in our cluster.
+
+### [Frontend](https://gitea.contc/ContinuousC/Frontend/src/branch/main/docs)
+
+The frontend is built in React + Typescript. In a production build,
+the bundled files are served by an nginx server. The frontend code
+reuses code from the relation graph library through a webassembly
+module (RelationGraph/wasm). For more info, refer to the frontend
+documentation.
+
+### [Relation Graph Engine](https://gitea.contc/ContinuousC/RelationGraph/src/branch/main/docs)
+
+The Relation Graph Engine manages the entity graph as well as status
+and alert information. Among other functions, it allows querying and
+updating the entity graph. It keeps the current state of the entity
+graph in memory to speed up queries and to allow transaction support
+when updating the graph. For historical queries, it queries the
+DBDaemon, which in turns queries Opensearch.
+
+Analysis documents:
+
+  - [Declarative relations](Declarative%20relations.pptx)
+  - [Prometheus Metrics Schema](Prometheus%20Metrics%20Schema.pptx)
+  - [Role-based authorization](Role-based%20authorization.pptx)
+
+### [DBDaemon](https://gitea.contc/ContinuousC/DBDaemon/src/branch/main/docs)
+
+The Database Daemon manages the connection to the elasticsearch
+database, manages document versioning, ensures proper serialization of
+concurrent requests and checks the schema of documents saved to the
+database (with limited transformation support for backward compatible
+schema updates).
+
+### Jaeger Discovery
+
+The Jaeger Discovery daemon reads trace data from Opensearch,
+processes it to find Operations, Services and their relations, and
+writes this information to the Relation Graph Engine.
+
+### [Jaeger Anomaly Detection](https://gitea.contc/ContinuousC/JaegerAnomalyDetection/src/branch/main/docs)
+
+The Jaeger Anomaly Detection daemon reads trace data from Opensearch
+and calculates statistical variables over time on the metrics. The
+results are written to Cortex via the Prometheus Remove Write
+protocol.
+
+Among other statistics produced, the Anomaly Score on a metric
+reflects the measure in which the value of a metric over the short
+term (immediate interval) lies within the variability of the metric
+over the long term (reference interval). It is expressed as a factor,
+with values of 1 and below indicating a "normal" situation (current
+value equal or below the reference), and values (much) higher than 1
+indicating an abnormality (current value (at least) x times higher
+than "normal").
+
+### Cortex
+
+Analysis documents:
+
+  - [Storage](Storage.pptx)
+  - [Cortex Authentication and Multi-Tenancy](Cortex%20Authentication%20and%20Multi-Tenancy.pptx)
+
+### [K8s agent](https://gitea.contc/ContinuousC/K8sDiscovery/src/branch/main/docs)
+
+Consist of a k8s discovery agent to send discovery data to the
+relation graph engine and a prometheus exporter to export metrics to
+our cortex instance.
+
+### Authentication
+
+We have setup our
+[IAM](https://gitea.contc/ContinuousC/IAM/src/branch/main/docs)
+solution with [Keycloak](https://www.keycloak.org/) and have created
+an [oidc
+client](https://gitea.contc/ContinuousC/Auth/src/branch/main/docs) to
+handle our authentication flows.
+
+Our design decisions can be found [here](Authenticatie.pptx)
+
+### [User Documentation](https://gitea.contc/ContinuousC/Documentation)
+
+We use the framework [docusaurus](https://docusaurus.io/) to create
+our user documentation. You can find the analysis document
+[here](User%20Documentation.pptx)

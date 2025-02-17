@@ -1,0 +1,82 @@
+################################################################################
+# Copyright ContinuousC. Licensed under the "Elastic License 2.0".             #
+################################################################################
+
+apiVersion: argoproj.io/v1alpha1
+kind: EventBus
+metadata:
+  name: default
+spec:
+  jetstream:
+    version: "2.10.10"
+---
+apiVersion: argoproj.io/v1alpha1
+kind: EventSource
+metadata:
+  name: opensearch-cert-update
+spec:
+  template:
+    serviceAccountName: continuousc
+  resource:
+    opensearch-secret-update:
+      namespace: "{{ .Release.Namespace }}"
+      group: ""
+      version: v1
+      resource: secrets
+      eventTypes: [UPDATE]
+      filter:
+        fields:
+          - key: metadata.name
+            operation: "=="
+            value: opensearch-tls
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: opensearch-cert-update
+spec:
+  template:
+    serviceAccountName: continuousc
+  dependencies:
+    - name: opensearch-cert-update
+      eventSourceName: opensearch-cert-update
+      eventName: opensearch-secret-update
+  triggers:
+    - template:
+        name: restart-pods
+        argoWorkflow:
+          operation: submit
+          source:
+            resource:
+              apiVersion: argoproj.io/v1alpha1
+              kind: Workflow
+              metadata:
+                generateName: restart-pods
+              spec:
+                serviceAccountName: continuousc
+                entrypoint: restart-pods
+                volumeClaimTemplates:
+                  - metadata:
+                      name: workdir
+                    spec:
+                      accessModes: ["ReadWriteOnce"]
+                      resources:
+                        requests:
+                          storage: 1Gi
+                templates:
+                  - name: restart-pods
+                    script:
+                      image: alpine/k8s:1.29.12
+                      command: ["/bin/sh", "-c"]
+                      source: |
+                        kubectl rollout restart statefulset opensearch-cluster-master
+                        kubectl rollout restart deployment  opensearch-dashboards
+                        kubectl rollout restart deployment  grafana
+                        kubectl rollout restart deployment  jaeger-collector
+                        kubectl rollout restart deployment  jaeger-query
+                        kubectl rollout restart deployment  jaeger-agent
+                        kubectl rollout restart statefulset jaeger-discovery
+                        kubectl rollout restart statefulset jaeger-anomaly-detection
+                        kubectl rollout restart statefulset dbdaemon
+                        kubectl rollout restart statefulset relation-graph-engine
+                        exit

@@ -1,0 +1,1403 @@
+{
+  "name": "Kubernetes",
+  "svgSource": "/icons/kubernetes/cluster.svg",
+  "elements": {
+    "internal": {
+      "item_types": [
+        "kubernetes/pod",
+        "kubernetes/container",
+        "kubernetes/cluster",
+        "kubernetes/node",
+        "kubernetes/namespace",
+        "kubernetes/init_container",
+        "kubernetes/service",
+        "kubernetes/deployment",
+        "kubernetes/stateful_set",
+        "kubernetes/storage_class",
+        "kubernetes/persistent_volume",
+        "kubernetes/persistent_volume_claim",
+        "kubernetes/config_map",
+        "kubernetes/secret",
+        "kubernetes/daemon_set",
+        "kubernetes/cron_job",
+        "kubernetes/job"
+      ],
+      "relation_types": [
+        "kubernetes/cluster-node",
+        "kubernetes/cluster-namespace",
+        "kubernetes/cluster-pod",
+        "kubernetes/cluster-service",
+        "kubernetes/cluster-deployment",
+        "kubernetes/cluster-stateful_set",
+        "kubernetes/cluster-storage_class",
+        "kubernetes/cluster-persistent_volume",
+        "kubernetes/cluster-persistent_volume_claim",
+        "kubernetes/cluster-config_map",
+        "kubernetes/cluster-secret",
+        "kubernetes/namespace-pod",
+        "kubernetes/namespace-service",
+        "kubernetes/namespace-deployment",
+        "kubernetes/namespace-stateful_set",
+        "kubernetes/namespace-persistent_volume_claim",
+        "kubernetes/namespace-config_map",
+        "kubernetes/namespace-secret",
+        "kubernetes/node-pod",
+        "kubernetes/pod-container",
+        "kubernetes/pod-init_container",
+        "kubernetes/service-pod",
+        "kubernetes/deployment-pod",
+        "kubernetes/stateful_set-pod",
+        "kubernetes/pod-persistent_volume_claim",
+        "kubernetes/pod-config_map",
+        "kubernetes/pod-secret",
+        "kubernetes/persistent_volume_claim-persistent_volume",
+        "kubernetes/storage_class-persistent_volume",
+        "kubernetes/daemon_set-pod",
+        "kubernetes/cron_job-pod",
+        "kubernetes/job-pod",
+        "kubernetes/cluster-daemon_set",
+        "kubernetes/cluster-cron_job",
+        "kubernetes/cluster-job",
+        "kubernetes/namespace-daemon_set",
+        "kubernetes/namespace-cron_job",
+        "kubernetes/namespace-job"
+      ]
+    },
+    "external": {
+      "item_types": ["jaeger/service"],
+      "relation_types": ["jaeger/runs_on_container"]
+    }
+  },
+  "topologies": {
+    "Workloads": {
+      "query": {
+        "root": "cluster",
+        "elements": {
+          "cluster": {
+            "items": {
+              "match": {
+                "item_type": {
+                  "in": ["kubernetes/cluster"]
+                },
+                "properties": {
+                  "kubernetes/name": {
+                    "string": {
+                      "template": "cluster"
+                    }
+                  }
+                }
+              }
+            },
+            "follow": [
+              {
+                "relation": {
+                  "match": {
+                    "relation_type": {
+                      "in": ["kubernetes/cluster-namespace"]
+                    }
+                  }
+                },
+                "element": "namespace"
+              }
+            ]
+          },
+          "namespace": {
+            "items": {
+              "match": {
+                "item_type": {
+                  "in": ["kubernetes/namespace"]
+                },
+                "properties": {
+                  "kubernetes/name": {
+                    "string": {
+                      "template": "namespace"
+                    }
+                  }
+                }
+              }
+            },
+            "follow": [
+              {
+                "relation": {
+                  "match": {
+                    "relation_type": {
+                      "in": [
+                        "kubernetes/namespace-stateful_set",
+                        "kubernetes/namespace-deployment",
+                        "kubernetes/namespace-daemon_set",
+                        "kubernetes/namespace-cron_job",
+                        "kubernetes/namespace-job"
+                      ]
+                    }
+                  }
+                },
+                "element": "pod_controller"
+              }
+            ]
+          },
+          "pod_controller": {
+            "items": {
+              "all": [
+                {
+                  "match": {
+                    "item_type": {
+                      "in": [
+                        "kubernetes/stateful_set",
+                        "kubernetes/deployment",
+                        "kubernetes/daemon_set",
+                        "kubernetes/cron_job",
+                        "kubernetes/job"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "match": {
+                    "item_type": {
+                      "template": "controller_type"
+                    },
+                    "properties": {
+                      "kubernetes/name": {
+                        "string": {
+                          "template": "pod_controller"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "follow": [
+              {
+                "relation": {
+                  "match": {
+                    "relation_type": {
+                      "in": [
+                        "kubernetes/stateful_set-pod",
+                        "kubernetes/deployment-pod",
+                        "kubernetes/daemon_set-pod",
+                        "kubernetes/cron_job-pod",
+                        "kubernetes/job-pod"
+                      ]
+                    }
+                  }
+                },
+                "element": "pod"
+              }
+            ]
+          },
+          "pod": {
+            "items": {
+              "match": {
+                "item_type": {
+                  "is": "kubernetes/pod"
+                },
+                "properties": {
+                  "kubernetes/name": {
+                    "string": {
+                      "template": "pod"
+                    }
+                  }
+                }
+              }
+            },
+            "follow": [
+              {
+                "relation": {
+                  "match": {
+                    "relation_type": {
+                      "in": ["kubernetes/service-pod"]
+                    }
+                  }
+                },
+                "element": "service"
+              }
+            ]
+          },
+          "service": {
+            "items": {
+              "match": {
+                "item_type": {
+                  "is": "kubernetes/service"
+                },
+                "properties": {
+                  "kubernetes/name": {
+                    "string": {
+                      "template": "service"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "template": {
+          "cluster": "strings",
+          "namespace": "strings",
+          "controller_type": "item_types",
+          "pod_controller": "strings",
+          "pod": "strings",
+          "service": "strings"
+        }
+      },
+      "queryFilters": [
+        {
+          "name": "cluster",
+          "label": "Cluster",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        },
+        {
+          "name": "namespace",
+          "label": "Namespace",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        },
+        {
+          "name": "controller_type",
+          "label": "Controller Type",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        },
+        {
+          "name": "pod_controller",
+          "label": "Pod Controller",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        },
+        {
+          "name": "pod",
+          "label": "Pod",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        },
+        {
+          "name": "service",
+          "label": "Service",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        }
+      ],
+      "stylesheet": {
+        "items": [],
+        "relations": []
+      }
+    },
+    "Computing": {
+      "query": {
+        "root": "cluster",
+        "elements": {
+          "cluster": {
+            "items": {
+              "match": {
+                "item_type": {
+                  "in": ["kubernetes/cluster"]
+                },
+                "properties": {
+                  "kubernetes/name": {
+                    "string": {
+                      "template": "cluster"
+                    }
+                  }
+                }
+              }
+            },
+            "follow": [
+              {
+                "relation": {
+                  "match": {
+                    "relation_type": {
+                      "in": ["kubernetes/cluster-node"]
+                    }
+                  }
+                },
+                "element": "node"
+              }
+            ]
+          },
+          "node": {
+            "items": {
+              "match": {
+                "item_type": {
+                  "in": ["kubernetes/node"]
+                },
+                "properties": {
+                  "kubernetes/name": {
+                    "string": {
+                      "template": "node"
+                    }
+                  }
+                }
+              }
+            },
+            "follow": [
+              {
+                "relation": {
+                  "match": {
+                    "relation_type": {
+                      "in": ["kubernetes/node-pod"]
+                    }
+                  }
+                },
+                "element": "pod"
+              }
+            ]
+          },
+          "pod": {
+            "items": {
+              "match": {
+                "item_type": {
+                  "is": "kubernetes/pod"
+                },
+                "properties": {
+                  "kubernetes/name": {
+                    "string": {
+                      "template": "pod"
+                    }
+                  }
+                },
+                "relations": {
+                  "match": {
+                    "relation_type": {
+                      "is": "kubernetes/namespace-pod"
+                    },
+                    "item": {
+                      "match": {
+                        "properties": {
+                          "kubernetes/name": {
+                            "string": {
+                              "template": "namespace"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "follow": [
+              {
+                "relation": {
+                  "match": {
+                    "relation_type": {
+                      "in": ["kubernetes/pod-container"]
+                    }
+                  }
+                },
+                "element": "container"
+              }
+            ]
+          },
+          "container": {
+            "items": {
+              "match": {
+                "item_type": {
+                  "is": "kubernetes/container"
+                },
+                "properties": {
+                  "kubernetes/name": {
+                    "string": {
+                      "template": "container"
+                    }
+                  }
+                }
+              }
+            },
+            "follow": [
+              {
+                "relation": {
+                  "match": {
+                    "relation_type": {
+                      "is": "jaeger/runs_on_container"
+                    }
+                  }
+                },
+                "element": "traced_service"
+              }
+            ]
+          },
+          "traced_service": {
+            "items": {
+              "match": {
+                "item_type": {
+                  "is": "jaeger/service"
+                },
+                "properties": {
+                  "jaeger/service_namespace": {
+                    "string": {
+                      "template": "traced_service_namespace"
+                    }
+                  },
+                  "jaeger/service_name": {
+                    "string": {
+                      "template": "traced_service_name"
+                    }
+                  },
+                  "jaeger/service_instance_id": {
+                    "string": {
+                      "template": "traced_service_instance_id"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "template": {
+          "cluster": "strings",
+          "namespace": "strings",
+          "node": "strings",
+          "pod": "strings",
+          "container": "strings",
+          "traced_service_namespace": "strings",
+          "traced_service_name": "strings",
+          "traced_service_instance_id": "strings"
+        }
+      },
+      "queryFilters": [
+        {
+          "name": "cluster",
+          "label": "Cluster",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        },
+        {
+          "name": "namespace",
+          "label": "Namespace",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        },
+        {
+          "name": "node",
+          "label": "Node",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        },
+        {
+          "name": "pod",
+          "label": "Pod",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        },
+        {
+          "name": "container",
+          "label": "Container",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        },
+        {
+          "name": "traced_service_namespace",
+          "label": "Traced Service Namespace",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        },
+        {
+          "name": "traced_service_name",
+          "label": "Traced Service Name",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        },
+        {
+          "name": "traced_service_instance_id",
+          "label": "Traced Service Instance Id",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        }
+      ],
+      "stylesheet": {
+        "items": [],
+        "relations": []
+      }
+    },
+    "Storage": {
+      "query": {
+        "root": "cluster",
+        "elements": {
+          "cluster": {
+            "items": {
+              "match": {
+                "item_type": {
+                  "in": ["kubernetes/cluster"]
+                },
+                "properties": {
+                  "kubernetes/name": {
+                    "string": {
+                      "template": "cluster"
+                    }
+                  }
+                }
+              }
+            },
+            "follow": [
+              {
+                "relation": {
+                  "match": {
+                    "relation_type": {
+                      "in": ["kubernetes/cluster-storage_class"]
+                    }
+                  }
+                },
+                "element": "storage_class"
+              }
+            ]
+          },
+          "storage_class": {
+            "items": {
+              "match": {
+                "item_type": {
+                  "in": ["kubernetes/storage_class"]
+                },
+                "properties": {
+                  "kubernetes/name": {
+                    "string": {
+                      "template": "storage_class"
+                    }
+                  }
+                }
+              }
+            },
+            "follow": [
+              {
+                "relation": {
+                  "match": {
+                    "relation_type": {
+                      "in": ["kubernetes/storage_class-persistent_volume"]
+                    }
+                  }
+                },
+                "element": "persistent_volume"
+              }
+            ]
+          },
+          "persistent_volume": {
+            "items": {
+              "match": {
+                "item_type": {
+                  "is": "kubernetes/persistent_volume"
+                },
+                "properties": {
+                  "kubernetes/name": {
+                    "string": {
+                      "template": "persistent_volume"
+                    }
+                  }
+                },
+                "relations": {
+                  "match": {
+                    "relation_type": {
+                      "is": "kubernetes/persistent_volume_claim-persistent_volume"
+                    },
+                    "item": {
+                      "match": {
+                        "item_type": {
+                          "is": "kubernetes/persistent_volume_claim"
+                        },
+                        "relations": {
+                          "match": {
+                            "relation_type": {
+                              "is": "kubernetes/namespace-persistent_volume_claim"
+                            },
+                            "item": {
+                              "match": {
+                                "properties": {
+                                  "kubernetes/name": {
+                                    "string": {
+                                      "template": "namespace"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "follow": [
+              {
+                "relation": {
+                  "match": {
+                    "relation_type": {
+                      "in": [
+                        "kubernetes/persistent_volume_claim-persistent_volume"
+                      ]
+                    }
+                  }
+                },
+                "element": "persistent_volume_claim"
+              }
+            ]
+          },
+          "persistent_volume_claim": {
+            "items": {
+              "match": {
+                "item_type": {
+                  "is": "kubernetes/persistent_volume_claim"
+                },
+                "properties": {
+                  "kubernetes/name": {
+                    "string": {
+                      "template": "persistent_volume_claim"
+                    }
+                  }
+                },
+                "relations": {
+                  "match": {
+                    "relation_type": {
+                      "is": "kubernetes/namespace-persistent_volume_claim"
+                    },
+                    "item": {
+                      "match": {
+                        "properties": {
+                          "kubernetes/name": {
+                            "string": {
+                              "template": "namespace"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "template": {
+          "cluster": "strings",
+          "namespace": "strings",
+          "storage_class": "strings",
+          "persistent_volume": "strings",
+          "persistent_volume_claim": "strings"
+        }
+      },
+      "queryFilters": [
+        {
+          "name": "cluster",
+          "label": "Cluster",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        },
+        {
+          "name": "namespace",
+          "label": "Namespace",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        },
+        {
+          "name": "storage_class",
+          "label": "Storage Class",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        },
+        {
+          "name": "persistent_volume",
+          "label": "Persistent Volume",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        },
+        {
+          "name": "persistent_volume_claim",
+          "label": "Persistent Volume Claim",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        }
+      ],
+      "stylesheet": {
+        "items": [],
+        "relations": []
+      }
+    },
+    "Volumes": {
+      "query": {
+        "root": "cluster",
+        "elements": {
+          "cluster": {
+            "items": {
+              "match": {
+                "item_type": {
+                  "in": ["kubernetes/cluster"]
+                },
+                "properties": {
+                  "kubernetes/name": {
+                    "string": {
+                      "template": "cluster"
+                    }
+                  }
+                }
+              }
+            },
+            "follow": [
+              {
+                "relation": {
+                  "match": {
+                    "relation_type": {
+                      "in": ["kubernetes/cluster-namespace"]
+                    }
+                  }
+                },
+                "element": "namespace"
+              }
+            ]
+          },
+          "namespace": {
+            "items": {
+              "match": {
+                "item_type": {
+                  "in": ["kubernetes/namespace"]
+                },
+                "properties": {
+                  "kubernetes/name": {
+                    "string": {
+                      "template": "namespace"
+                    }
+                  }
+                }
+              }
+            },
+            "follow": [
+              {
+                "relation": {
+                  "match": {
+                    "relation_type": {
+                      "in": ["kubernetes/namespace-pod"]
+                    }
+                  }
+                },
+                "element": "pod"
+              }
+            ]
+          },
+          "pod": {
+            "items": {
+              "match": {
+                "item_type": {
+                  "is": "kubernetes/pod"
+                },
+                "properties": {
+                  "kubernetes/name": {
+                    "string": {
+                      "template": "pod"
+                    }
+                  }
+                }
+              }
+            },
+            "follow": [
+              {
+                "relation": {
+                  "match": {
+                    "relation_type": {
+                      "in": [
+                        "kubernetes/pod-config_map",
+                        "kubernetes/pod-secret",
+                        "kubernetes/pod-persistent_volume_claim"
+                      ]
+                    }
+                  }
+                },
+                "element": "volume"
+              }
+            ]
+          },
+          "volume": {
+            "items": {
+              "match": {
+                "item_type": {
+                  "in": [
+                    "kubernetes/config_map",
+                    "kubernetes/secret",
+                    "kubernetes/persistent_volume_claim"
+                  ]
+                },
+                "properties": {
+                  "kubernetes/name": {
+                    "string": {
+                      "template": "volume"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "template": {
+          "cluster": "strings",
+          "namespace": "strings",
+          "pod": "strings",
+          "volume": "strings"
+        }
+      },
+      "queryFilters": [
+        {
+          "name": "cluster",
+          "label": "Cluster",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        },
+        {
+          "name": "namespace",
+          "label": "Namespace",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        },
+        {
+          "name": "pod",
+          "label": "Pod",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        },
+        {
+          "name": "volume",
+          "label": "Volume",
+          "filter": {
+            "type": "autocomplete",
+            "multipleSelection": true
+          }
+        }
+      ],
+      "stylesheet": {
+        "items": [],
+        "relations": []
+      }
+    }
+  },
+  "defaultTopologyFilters": {
+    "namespace": ["default"]
+  },
+  "itemTypes": {
+    "kubernetes/pod": {
+      "metrics": {
+        "cpu_usage": {
+          "name": "Average CPU Usage Over 5min",
+          "documentation": "This metric represents the cumulative CPU time consumed in seconds.",
+          "item": "kubelet-metrics-cadvisor:podCpu",
+          "expr": "rate(container_cpu_usage_seconds_total[5m])",
+          "thresholds": {
+            "pod-cpu-usage": "$min"
+          },
+          "unit": "",
+          "display_unit": ""
+        },
+        "cpu_throttled": {
+          "name": "CPU throttled percentage Over 5min",
+          "documentation": "The percentage of CPU periods where the item ran but was throttled (stopped from running the whole CPU period).",
+          "item": "kubelet-metrics-cadvisor:podOtherMetrics",
+          "expr": "rate(container_cpu_cfs_throttled_periods_total[5m])/rate(container_cpu_cfs_periods_total[5m])",
+          "unit": "",
+          "display_unit": "%"
+        },
+        "memory_rss": {
+          "name": "Memory RSS",
+          "documentation": "The amount of anonymous and swap cache memory (includes transparent hugepages).",
+          "item": "kubelet-metrics-cadvisor:podOtherMetrics",
+          "expr": "container_memory_rss",
+          "unit": "B"
+        },
+        "memory_working_set": {
+          "name": "Memory Working set",
+          "documentation": "The amount of working set memory, this includes recently accessed memory,dirty memory, and kernel memory. Working set is <= 'usage'.",
+          "item": "kubelet-metrics-cadvisor:podOtherMetrics",
+          "expr": "container_memory_working_set_bytes",
+          "thresholds": {
+            "pod-memory-usage": "$min"
+          },
+          "unit": "B"
+        },
+        "network_receive": {
+          "name": "Receive Bytes",
+          "documentation": "Cumulative number of bytes received.",
+          "item": "kubelet-metrics-cadvisor:pauseContainerInterface",
+          "expr": "rate(container_network_receive_bytes_total[5m])",
+          "unit": "B"
+        },
+        "network_transmit": {
+          "name": "Transmitted Bytes",
+          "documentation": "Cumulative number of bytes transmitted.",
+          "item": "kubelet-metrics-cadvisor:pauseContainerInterface",
+          "expr": "rate(container_network_transmit_bytes_total[5m])",
+          "unit": "B"
+        },
+        "fs_read": {
+          "name": "File system Read Bytes",
+          "documentation": "Cumulative number of bytes read from the filesystem.",
+          "item": "kubelet-metrics-cadvisor:containerIo",
+          "expr": "rate(container_fs_reads_bytes_total[5m])",
+          "select": {
+            "top": {
+              "n": 5
+            }
+          },
+          "unit": "B"
+        },
+        "fs_write": {
+          "name": "File system Write Bytes",
+          "documentation": "Cumulative number of bytes written to the filesystem.",
+          "item": "kubelet-metrics-cadvisor:containerIo",
+          "expr": "rate(container_fs_writes_bytes_total[5m])",
+          "unit": "B"
+        }
+      },
+      "dashboards": {
+        "type_range": {
+          "panels": [
+            {
+              "name": "CPU",
+              "widgets": [
+                {
+                  "name": "Average Usage Over 5min",
+                  "documentation": "This metric represents the cumulative CPU time consumed in seconds.",
+                  "widget_type": "lines",
+                  "metric": "cpu_usage",
+                  "select": {
+                    "top": {
+                      "n": 5
+                    }
+                  }
+                },
+                {
+                  "name": "Throttled percentage Over 5min",
+                  "documentation": "The percentage of CPU periods where the item ran but was throttled (stopped from running the whole CPU period).",
+                  "widget_type": "lines",
+                  "metric": "cpu_throttled",
+                  "select": {
+                    "top": {
+                      "n": 5
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Memory",
+              "widgets": [
+                {
+                  "name": "RSS",
+                  "documentation": "The amount of anonymous and swap cache memory (includes transparent hugepages).",
+                  "widget_type": "lines",
+                  "metric": "memory_rss",
+                  "select": {
+                    "top": {
+                      "n": 5
+                    }
+                  }
+                },
+                {
+                  "name": "Working set",
+                  "documentation": "The amount of working set memory, this includes recently accessed memory,dirty memory, and kernel memory. Working set is <= 'usage'.",
+                  "widget_type": "lines",
+                  "metric": "memory_working_set",
+                  "select": {
+                    "top": {
+                      "n": 5
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Network",
+              "widgets": [
+                {
+                  "name": "Receive Bytes",
+                  "documentation": "Cumulative number of bytes received.",
+                  "widget_type": "lines",
+                  "metric": "network_receive",
+                  "select": {
+                    "top": {
+                      "n": 5
+                    }
+                  }
+                },
+                {
+                  "name": "Transmitted Bytes",
+                  "documentation": "Cumulative number of bytes transmitted.",
+                  "widget_type": "lines",
+                  "metric": "network_transmit",
+                  "select": {
+                    "top": {
+                      "n": 5
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Filesystem",
+              "widgets": [
+                {
+                  "name": "Read Bytes",
+                  "documentation": "Cumulative number of bytes read from the filesystem.",
+                  "widget_type": "lines",
+                  "metric": "fs_read",
+                  "select": {
+                    "top": {
+                      "n": 5
+                    }
+                  }
+                },
+                {
+                  "name": "Write Bytes",
+                  "documentation": "Cumulative number of bytes written to the filesystem.",
+                  "widget_type": "lines",
+                  "metric": "fs_write",
+                  "select": {
+                    "top": {
+                      "n": 5
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "instance": {
+          "panels": [
+            {
+              "name": "CPU",
+              "widgets": [
+                {
+                  "graph": "range",
+                  "name": "Average Usage Over 5min",
+                  "documentation": "This metric represents the cumulative CPU time consumed in seconds.",
+                  "widget_type": "lines",
+                  "metric": "cpu_usage"
+                },
+                {
+                  "graph": "range",
+                  "name": "Throttled percentage Over 5min",
+                  "documentation": "The percentage of CPU periods where the item ran but was throttled (stopped from running the whole CPU period).",
+                  "widget_type": "lines",
+                  "metric": "cpu_throttled"
+                }
+              ]
+            },
+            {
+              "name": "Memory",
+              "widgets": [
+                {
+                  "graph": "range",
+                  "name": "Resident set size",
+                  "documentation": "Portion of memory occupied by a process that is held in main memory (RAM).",
+                  "widget_type": "lines",
+                  "metric": "memory_rss"
+                },
+                {
+                  "graph": "range",
+                  "name": "Working set",
+                  "documentation": "Collection of memory pages currently owned by your process and not swapped out",
+                  "widget_type": "lines",
+                  "metric": "memory_working_set"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "table": {
+        "column_order": [
+          { "property": "creation_timestamp" },
+          { "property": "namespace" },
+          { "property": "labels" },
+          { "metric": "cpu_usage" },
+          { "metric": "cpu_throttled" },
+          { "metric": "memory_rss" },
+          { "metric": "memory_working_set" },
+          { "metric": "network_receive" },
+          { "metric": "network_transmit" },
+          { "metric": "fs_read" },
+          { "metric": "fs_write" }
+        ],
+        "column_visibility": [
+          { "property": "creation_timestamp" },
+          { "property": "namespace" },
+          { "property": "labels" },
+          { "metric": "cpu_usage" },
+          { "metric": "cpu_throttled" },
+          { "metric": "memory_rss" },
+          { "metric": "memory_working_set" },
+          { "metric": "network_receive" },
+          { "metric": "network_transmit" },
+          { "metric": "fs_read" },
+          { "metric": "fs_write" }
+        ]
+      }
+    },
+    "kubernetes/container": {
+      "metrics": {
+        "cpu_throttled": {
+          "name": "CPU throttled percentage Over 5min",
+          "documentation": "The percentage of CPU periods where the item ran but was throttled (stopped from running the whole CPU period).",
+          "item": "kubelet-metrics-cadvisor:containerOtherMetrics",
+          "expr": "rate(container_cpu_cfs_throttled_periods_total[5m]) / rate(container_cpu_cfs_periods_total[5m])",
+          "unit": "",
+          "display_unit": "%"
+        },
+        "memory_rss": {
+          "name": "Memory RSS",
+          "documentation": "The amount of anonymous and swap cache memory (includes transparent hugepages).",
+          "item": "kubelet-metrics-cadvisor:containerOtherMetrics",
+          "expr": "container_memory_rss",
+          "unit": "B"
+        },
+        "memory_working_set": {
+          "name": "Memory Working set",
+          "documentation": "The amount of working set memory, this includes recently accessed memory,dirty memory, and kernel memory. Working set is <= 'usage'.",
+          "item": "kubelet-metrics-cadvisor:containerOtherMetrics",
+          "expr": "container_memory_working_set_bytes",
+          "unit": "B"
+        },
+        "fs_read": {
+          "name": "File system Read Bytes",
+          "documentation": "Cumulative number of bytes read from the filesystem.",
+          "item": "kubelet-metrics-cadvisor:containerIo",
+          "expr": "rate(container_fs_reads_bytes_total[5m])",
+          "unit": "B"
+        },
+        "fs_write": {
+          "name": "File system Write Bytes",
+          "documentation": "Cumulative number of bytes written to the filesystem.",
+          "item": "kubelet-metrics-cadvisor:containerIo",
+          "expr": "rate(container_fs_writes_bytes_total[5m])",
+          "unit": "B"
+        },
+        "cpu_request": {
+          "name": "CPU Resource Request",
+          "documentation": "CPU Cores Requested.",
+          "item": "kube-state-metrics:containerResourceCpu",
+          "expr": "kube_pod_container_resource_requests"
+        },
+        "cpu_limit": {
+          "name": "CPU Resource Limit",
+          "documentation": "CPU Cores Limit.",
+          "item": "kube-state-metrics:containerResourceCpu",
+          "expr": "kube_pod_container_resource_limits"
+        },
+        "memory_request": {
+          "name": "Memory Resource Request",
+          "documentation": "Memory Requested.",
+          "item": "kube-state-metrics:containerResourceMemory",
+          "expr": "kube_pod_container_resource_requests",
+          "unit": "B"
+        },
+        "memory_limit": {
+          "name": "Memory Resource Limit",
+          "documentation": "Memory Limit.",
+          "item": "kube-state-metrics:containerResourceMemory",
+          "expr": "kube_pod_container_resource_limits",
+          "unit": "B"
+        }
+      },
+      "dashboards": {
+        "type_range": {
+          "panels": [
+            {
+              "name": "CPU",
+              "widgets": [
+                {
+                  "name": "CPU throttled percentage Over 5min",
+                  "documentation": "The percentage of CPU periods where the item ran but was throttled (stopped from running the whole CPU period).",
+                  "widget_type": "lines",
+                  "metric": "cpu_throttled",
+                  "select": {
+                    "top": {
+                      "n": 5
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Memory",
+              "widgets": [
+                {
+                  "name": "Memory RSS",
+                  "documentation": "The amount of anonymous and swap cache memory (includes transparent hugepages).",
+                  "widget_type": "lines",
+                  "metric": "memory_rss",
+                  "select": {
+                    "top": {
+                      "n": 5
+                    }
+                  }
+                },
+                {
+                  "name": "Memory Working set",
+                  "documentation": "The amount of working set memory, this includes recently accessed memory,dirty memory, and kernel memory. Working set is <= 'usage'.",
+                  "widget_type": "lines",
+                  "metric": "memory_working_set",
+                  "select": {
+                    "top": {
+                      "n": 5
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Filesystem",
+              "widgets": [
+                {
+                  "name": "File system Read Bytes",
+                  "documentation": "Cumulative number of bytes read from the filesystem.",
+                  "widget_type": "lines",
+                  "metric": "fs_read",
+                  "select": {
+                    "top": {
+                      "n": 5
+                    }
+                  }
+                },
+                {
+                  "name": "File system Write Bytes",
+                  "documentation": "Cumulative number of bytes written to the filesystem.",
+                  "widget_type": "lines",
+                  "metric": "fs_write",
+                  "select": {
+                    "top": {
+                      "n": 5
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "CPU Resource",
+              "widgets": [
+                {
+                  "name": "CPU Cores Requested",
+                  "documentation": "Number of cpu cores requested",
+                  "widget_type": "lines",
+                  "metric": "cpu_request",
+                  "select": {
+                    "top": {
+                      "n": 5
+                    }
+                  }
+                },
+                {
+                  "name": "CPU Cores Limit",
+                  "documentation": "CPU cores limit",
+                  "widget_type": "lines",
+                  "metric": "cpu_limit",
+                  "select": {
+                    "top": {
+                      "n": 5
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Memory Resource",
+              "widgets": [
+                {
+                  "name": "Memory Requested",
+                  "documentation": "Memory requested",
+                  "widget_type": "lines",
+                  "metric": "memory_request",
+                  "select": {
+                    "top": {
+                      "n": 5
+                    }
+                  }
+                },
+                {
+                  "name": "Memory Limit",
+                  "documentation": "Memory limit",
+                  "widget_type": "lines",
+                  "metric": "memory_limit",
+                  "select": {
+                    "top": {
+                      "n": 5
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "table": {
+        "column_order": [
+          { "property": "creation_timestamp" },
+          { "property": "namespace" },
+          { "property": "labels" },
+          { "property": "image" },
+          { "metric": "cpu_throttled" },
+          { "metric": "memory_rss" },
+          { "metric": "memory_working_set" },
+          { "metric": "fs_read" },
+          { "metric": "fs_write" },
+          { "metric": "cpu_request" },
+          { "metric": "cpu_limit" },
+          { "metric": "memory_request" },
+          { "metric": "memory_limit" }
+        ],
+        "column_visibility": [
+          { "property": "creation_timestamp" },
+          { "property": "namespace" },
+          { "property": "labels" },
+          { "property": "image" },
+          { "metric": "cpu_throttled" },
+          { "metric": "memory_rss" },
+          { "metric": "memory_working_set" },
+          { "metric": "fs_read" },
+          { "metric": "fs_write" },
+          { "metric": "cpu_request" },
+          { "metric": "cpu_limit" },
+          { "metric": "memory_request" },
+          { "metric": "memory_limit" }
+        ]
+      }
+    }
+  }
+}

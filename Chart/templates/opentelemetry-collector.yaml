@@ -1,0 +1,193 @@
+################################################################################
+# Copyright ContinuousC. Licensed under the "Elastic License 2.0".             #
+################################################################################
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opentelemetry-collector
+  labels:
+    app.kubernetes.io/name: opentelemetry-collector
+    app.kubernetes.io/instance: "{{ .Release.Name }}"
+    tenant: "{{ .Values.continuousc.tenant }}"
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: opentelemetry-collector
+      app.kubernetes.io/instance: "{{ .Release.Name }}"
+      tenant: "{{ .Values.continuousc.tenant }}"
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: opentelemetry-collector
+        app.kubernetes.io/instance: "{{ .Release.Name }}"
+        tenant: "{{ .Values.continuousc.tenant }}"
+    spec:
+      containers:
+        - name: opentelemetry-collector
+          image: otel/opentelemetry-collector-contrib:0.96.0
+          command:
+            - /otelcol-contrib
+            - --config=/config/spanmetrics.yaml
+          ports:
+            - name: grpc
+              containerPort: 4317
+              protocol: TCP
+            - name: http
+              containerPort: 4318
+              protocol: TCP
+            - name: unknown
+              containerPort: 8888
+              protocol: TCP
+            - name: metrics
+              containerPort: 9999
+              protocol: TCP
+          volumeMounts:
+            - name: opentelemetry-config
+              mountPath: /config
+            - name: opentelemetry-tls
+              mountPath: /tls
+          resources:
+            requests:
+              cpu: 0.1
+              memory: "512Mi"
+            limits:
+              memory: "1Gi"
+      volumes:
+        - name: opentelemetry-config
+          configMap:
+            name: opentelemetry-config
+        - name: opentelemetry-tls
+          secret:
+            secretName: opentelemetry-tls
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opentelemetry-config
+data:
+  spanmetrics.yaml: |
+    receivers:
+      otlp:
+        protocols:
+          http:
+          grpc:
+    exporters:
+      prometheus:
+        endpoint: "0.0.0.0:9999"
+        tls:
+          ca_file: "/tls/ca.crt"
+          cert_file: "/tls/tls.crt"
+          key_file: "/tls/tls.key"
+      prometheusremotewrite:
+        endpoint: http://cortex-distributor.cortex:8080/api/v1/push
+        headers:
+          X-Scope-OrgID: "{{ .Values.continuousc.prometheusTenant }}"
+        target_info:
+          enabled: true
+      otlp:
+        endpoint: jaeger-collector:4317
+        tls:
+          insecure: true
+      debug:
+        verbosity: detailed
+    connectors:
+      spanmetrics:
+        exemplars:
+          enabled: true
+        # events:
+        #   enabled: true
+    service:
+      pipelines:
+        traces:
+          receivers: [otlp]
+          exporters: [spanmetrics,otlp]
+        metrics:
+          receivers: [spanmetrics]
+          exporters: [prometheusremotewrite,prometheus]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: opentelemetry-collector
+  labels:
+    app.kubernetes.io/name: opentelemetry-collector
+    app.kubernetes.io/instance: "{{ .Release.Name }}"
+    tenant: "{{ .Values.continuousc.tenant }}"
+spec:
+  selector:
+    app.kubernetes.io/name: opentelemetry-collector
+    app.kubernetes.io/instance: "{{ .Release.Name }}"
+    tenant: "{{ .Values.continuousc.tenant }}"
+  type: ClusterIP
+  ports:
+    - name: grpc
+      targetPort: grpc
+      protocol: TCP
+      port: 4317
+    - name: http
+      targetPort: http
+      protocol: TCP
+      port: 4318
+    - name: unknown
+      targetPort: unknown
+      protocol: TCP
+      port: 8888
+    - name: metrics
+      targetPort: metrics
+      protocol: TCP
+      port: 9999
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: opentelemetry-tls
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "3"
+    helm.sh/hook: pre-install
+    helm.sh/hook-weight: "3"
+spec:
+  secretName: opentelemetry-tls
+  duration: 2160h0m0s # 90d
+  renewBefore: 360h0m0s # 15d
+  subject:
+    organizations:
+      - ContinuousC
+  commonName: Opentelemetry Collector
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS8
+    size: 2048
+  usages:
+    - server auth
+    - client auth
+  dnsNames:
+    - opentelemetry-collector
+  issuerRef:
+    name: ca-issuer
+    kind: Issuer
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: opentelemetry-metrics
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: opentelemetry-collector
+      app.kubernetes.io/instance: "{{ .Release.Name }}"
+      tenant: "{{ .Values.continuousc.tenant }}"
+  endpoints:
+    - honorLabels: true
+      interval: 1m
+      path: /metrics
+      port: metrics
+      scheme: https
+      scrapeTimeout: 10s
+      tlsConfig:
+        serverName: opentelemetry-collector
+        ca:
+          secret:
+            name: opentelemetry-tls
+            key: ca.crt

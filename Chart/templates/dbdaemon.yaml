@@ -1,0 +1,140 @@
+################################################################################
+# Copyright ContinuousC. Licensed under the "Elastic License 2.0".             #
+################################################################################
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: dbdaemon
+  labels:
+    app.kubernetes.io/name: dbdaemon
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    tenant: {{ .Values.continuousc.tenant }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: dbdaemon
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      tenant: {{ .Values.continuousc.tenant }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: dbdaemon
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        tenant: {{ .Values.continuousc.tenant }}
+    spec:
+      containers:
+        - name: dbdaemon
+          imagePullPolicy: Always
+          image: "{{ required "Need imageRegistryBase name" .Values.continuousc.registry }}/{{ .Values.continuousc.c9c.dbdaemon.image }}:{{ .Values.continuousc.c9c.dbdaemon.tag }}"
+          command:
+            [
+              /usr/bin/dbdaemon,
+              --bind,
+              0.0.0.0:9999,
+              --certs-dir,
+              /usr/share/continuousc/certs/dbdaemon,
+              --ca,
+              ca.crt,
+              --cert,
+              tls.crt,
+              --key,
+              tls.key,
+              --elastic-url,
+              https://opensearch-cluster-master:9200,
+              --elastic-cert,
+              /usr/share/continuousc/certs/opensearch/tls.crt,
+              --elastic-key,
+              /usr/share/continuousc/certs/opensearch/tls.key,
+              --elastic-ca,
+              /usr/share/continuousc/certs/opensearch/ca.crt,
+              --elastic-index-prefix,
+              continuousc,
+              -vvv
+            ]
+          env:
+            - name: "RUST_BACKTRACE"
+              value: "1"
+            - name: "RUST_LOG"
+              value: "debug"
+            - name: "OTEL_EXPORTER_OTLP_ENDPOINT"
+              value: "grpc://opentelemetry-collector:4317"
+            - name: "INSTANCE_ID"
+              value: "{{ .Values.continuousc.tenant }}.{{ .Values.continuousc.auth.subDomain }}.{{ .Values.continuousc.domain }}"
+            - name: "K8S_NODE_NAME"
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: "K8S_NAMESPACE_NAME"
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: "K8S_POD_NAME"
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: "K8S_POD_UID"
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
+            - name: "K8S_CONTAINER_NAME"
+              value: dbdaemon
+          ports:
+            - name: dbdaemon
+              containerPort: 9999
+              protocol: TCP
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          volumeMounts:
+            - name: dbdaemon-cert
+              readOnly: true
+              mountPath: "/usr/share/continuousc/certs/dbdaemon"
+            - name: relation-graph-engine-client-cert
+              readOnly: true
+              mountPath: "/usr/share/continuousc/certs/relation-graph-engine-client"
+            - name: opensearch-cert
+              readOnly: true
+              mountPath: "/usr/share/continuousc/certs/opensearch"
+          resources:
+            requests:
+              cpu: 0.1
+              memory: "512Mi"
+      imagePullSecrets:
+        - name: private-registry
+      volumes:
+        - name: dbdaemon-cert
+          secret:
+            secretName: dbdaemon
+        - name: relation-graph-engine-client-cert
+          secret:
+            secretName: relation-graph-engine-client
+        - name: opensearch-cert
+          secret:
+            secretName: opensearch-admin
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dbdaemon
+  labels:
+    app.kubernetes.io/name: dbdaemon
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    tenant: {{ .Values.continuousc.tenant }}
+spec:
+  type: ClusterIP
+  ports:
+    - name: dbdaemon
+      port: 9999
+      protocol: TCP
+      targetPort: 9999
+  selector:
+    app.kubernetes.io/name: dbdaemon
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    tenant: {{ .Values.continuousc.tenant }}

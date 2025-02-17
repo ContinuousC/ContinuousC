@@ -1,0 +1,94 @@
+apiVersion: backstage.io/v1alpha1
+kind: Domain
+metadata:
+  name: continuousc
+spec:
+  owner: developers
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: continuousc-core
+  description: ContinuousC Core Components
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+spec:
+  owner: developers
+  domain: continuousc
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: continuousc-helm-chart
+  description: ContinuousC Helm Chart
+  annotations:
+    argocd/app-selector: application=continuousc
+spec:
+  type: service
+  lifecycle: production
+  owner: developers
+  system: continuousc-core
+  dependsOn:
+    - component:opensearch
+    - component:postgresql
+    - component:prometheus
+    - component:jaeger
+    - component:grafana
+    - component:c9c-frontend
+    - component:relation-graph-engine
+    - component:dbdaemon
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: opensearch
+spec:
+  type: service
+  lifecycle: production
+  owner: developers
+  system: continuousc-core
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: prometheus
+spec:
+  type: service
+  lifecycle: production
+  owner: developers
+  system: continuousc-core
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: postgresql
+spec:
+  type: service
+  lifecycle: production
+  owner: developers
+  system: continuousc-core
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: jaeger
+spec:
+  type: service
+  lifecycle: production
+  owner: developers
+  system: continuousc-core
+  dependsOn:
+    - component:opensearch
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: grafana
+spec:
+  type: service
+  lifecycle: production
+  owner: developers
+  system: continuousc-core
+  dependsOn:
+    - component:postgresql
+    - component:prometheus

@@ -1,0 +1,36 @@
+[submodule "Frontend"]
+	path = Frontend
+	url = ../Frontend
+[submodule "RelationGraph"]
+	path = RelationGraph
+	url = ../RelationGraph
+[submodule "PrometheusSchema"]
+	path = PrometheusSchema
+	url = ../PrometheusSchema
+[submodule "JaegerDiscovery"]
+	path = JaegerDiscovery
+	url = ../JaegerDiscovery
+[submodule "DBDaemon"]
+	path = DBDaemon
+	url = ../DBDaemon
+[submodule "Auth"]
+	path = Auth
+	url = ../Auth
+[submodule "JaegerAnomalyDetection"]
+	path = JaegerAnomalyDetection
+	url = ../JaegerAnomalyDetection
+[submodule "K8sDiscovery"]
+	path = K8sDiscovery
+	url = ../K8sDiscovery
+[submodule "Documentation"]
+	path = Documentation
+	url = ../Documentation
+[submodule "DBSchema"]
+	path = DBSchema
+	url = ../DBSchema
+[submodule "Rpc"]
+	path = Rpc
+	url = ../Rpc
+[submodule "LockDebug"]
+	path = LockDebug
+	url = ../LockDebug

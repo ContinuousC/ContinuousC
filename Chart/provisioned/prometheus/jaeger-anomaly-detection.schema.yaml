@@ -1,0 +1,345 @@
+################################################################################
+# Copyright ContinuousC. Licensed under the "Elastic License 2.0".             #
+################################################################################
+
+version: 0.1.0
+items:
+  root:
+    items:
+      - default
+      - operation-relations
+      - service-relations
+  default:
+    query:
+      config: !eq default
+      operation_name: set
+      service_instance_id: opt
+      service_name: set
+      service_namespace: opt
+    keys:
+      - config
+      - operation_name
+      - service_instance_id
+      - service_name
+      - service_namespace
+    items:
+      - default-summary
+      - default-anomaly
+      - default-welford
+      - default-source
+  default-summary:
+    query:
+      metric_type: !eq summary
+    metrics:
+      trace_duration: !summary
+      trace_busy: !summary
+      trace_call_rate: !summary
+      trace_error_rate: !summary
+  default-anomaly:
+    query:
+      metric_type: !eq anomaly_score
+    items:
+      - default-anomaly-score
+      - default-anomaly-immediate
+      - default-anomaly-reference
+  default-anomaly-score:
+    query:
+      immediate: !set
+      reference: !set
+    keys:
+      - immediate
+      - reference
+    metrics:
+      trace_duration_score: !scalar
+      trace_busy_score: !scalar
+      trace_call_rate_score: !scalar
+      trace_error_rate_score: !scalar
+  default-anomaly-immediate:
+    query:
+      immediate: !set
+      reference: !unset
+    keys:
+      - immediate
+    metrics:
+      trace_duration_count: !scalar
+      trace_duration_mean: !scalar
+      trace_duration_ci: !scalar
+      trace_busy_count: !scalar
+      trace_busy_mean: !scalar
+      trace_busy_ci: !scalar
+      trace_call_rate_count: !scalar
+      trace_call_rate_mean: !scalar
+      trace_call_rate_ci: !scalar
+      trace_error_rate_count: !scalar
+      trace_error_rate_mean: !scalar
+      trace_error_rate_ci: !scalar
+  default-anomaly-reference:
+    query:
+      immediate: !unset
+      reference: !set
+    keys:
+      - reference
+    metrics:
+      trace_duration_count: !scalar
+      trace_duration_mean: !scalar
+      trace_duration_ci: !scalar
+      trace_busy_count: !scalar
+      trace_busy_mean: !scalar
+      trace_busy_ci: !scalar
+      trace_call_rate_count: !scalar
+      trace_call_rate_mean: !scalar
+      trace_call_rate_ci: !scalar
+      trace_error_rate_count: !scalar
+      trace_error_rate_mean: !scalar
+      trace_error_rate_ci: !scalar
+  default-welford:
+    query:
+      metric_type: !eq welford
+    metrics:
+      trace_busy_count: !scalar
+        type: counter
+      trace_busy_m2: !scalar
+        type: gauge
+      trace_busy_mean: !scalar
+        type: gauge
+      trace_call_rate_count: !scalar
+        type: counter
+      trace_call_rate_m2: !scalar
+        type: gauge
+      trace_call_rate_mean: !scalar
+        type: gauge
+      trace_duration_count: !scalar
+        type: counter
+      trace_duration_m2: !scalar
+        type: gauge
+      trace_duration_mean: !scalar
+        type: gauge
+      trace_error_rate_count: !scalar
+        type: counter
+      trace_error_rate_m2: !scalar
+        type: gauge
+      trace_error_rate_mean: !scalar
+        type: gauge
+  default-source:
+    query:
+      metric_type: !eq source_count
+    metrics:
+      trace_call_rate_total: !scalar
+        type: counter
+      trace_error_rate_total: !scalar
+        type: counter
+  operation-relations:
+    query:
+      config: !eq operation-relations
+      operation_name: set
+      parent_operation_name: opt
+      parent_service_instance_id: opt
+      parent_service_name: opt
+      parent_service_namespace: opt
+      service_instance_id: opt
+      service_name: set
+      service_namespace: opt
+    keys:
+      - config
+      - operation_name
+      - parent_operation_name
+      - parent_service_instance_id
+      - parent_service_name
+      - parent_service_namespace
+      - service_instance_id
+      - service_name
+      - service_namespace
+    items:
+      - operation-relations-summary
+      - operation-relations-anomaly
+      - operation-relations-welford
+      # - operation-relations-source
+  operation-relations-summary:
+    query:
+      metric_type: !eq summary
+    metrics:
+      trace_duration: !summary
+      trace_busy: !summary
+      trace_call_rate: !summary
+      trace_error_rate: !summary
+  operation-relations-welford:
+    query:
+      metric_type: !eq welford
+    metrics:
+      trace_duration_count: !scalar
+        type: counter
+      trace_duration_m2: !scalar
+        type: gauge
+      trace_duration_mean: !scalar
+        type: gauge
+  operation-relations-anomaly:
+    query:
+      metric_type: !eq anomaly_score
+    items:
+      - operation-relations-anomaly-score
+      - operation-relations-anomaly-immediate
+      - operation-relations-anomaly-reference
+  operation-relations-anomaly-score:
+    query:
+      immediate: !set
+      reference: !set
+    keys:
+      - immediate
+      - reference
+    metrics:
+      trace_duration_score: !scalar
+      trace_busy_score: !scalar
+      trace_call_rate_score: !scalar
+      trace_error_rate_score: !scalar
+  operation-relations-anomaly-immediate:
+    query:
+      immediate: !set
+      reference: !unset
+    keys:
+      - immediate
+    metrics:
+      trace_duration_count: !scalar
+      trace_duration_mean: !scalar
+      trace_duration_ci: !scalar
+      trace_busy_count: !scalar
+      trace_busy_mean: !scalar
+      trace_busy_ci: !scalar
+      trace_call_rate_count: !scalar
+      trace_call_rate_mean: !scalar
+      trace_call_rate_ci: !scalar
+      trace_error_rate_count: !scalar
+      trace_error_rate_mean: !scalar
+      trace_error_rate_ci: !scalar
+  operation-relations-anomaly-reference:
+    query:
+      immediate: !unset
+      reference: !set
+    keys:
+      - reference
+    metrics:
+      trace_duration_count: !scalar
+      trace_duration_mean: !scalar
+      trace_duration_ci: !scalar
+      trace_busy_count: !scalar
+      trace_busy_mean: !scalar
+      trace_busy_ci: !scalar
+      trace_call_rate_count: !scalar
+      trace_call_rate_mean: !scalar
+      trace_call_rate_ci: !scalar
+      trace_error_rate_count: !scalar
+      trace_error_rate_mean: !scalar
+      trace_error_rate_ci: !scalar
+  service-relations:
+    query:
+      config: !eq service-relations
+      parent_service_instance_id: opt
+      parent_service_name: opt
+      parent_service_namespace: opt
+      service_instance_id: opt
+      service_name: set
+      service_namespace: opt
+    keys:
+      - config
+      - parent_service_instance_id
+      - parent_service_name
+      - parent_service_namespace
+      - service_instance_id
+      - service_name
+      - service_namespace
+    items:
+      - service-relations-summary
+      - service-relations-anomaly
+      - service-relations-welford
+  service-relations-summary:
+    query:
+      metric_type: !eq summary
+    metrics:
+      trace_duration: !summary
+      trace_busy: !summary
+      trace_call_rate: !summary
+      trace_error_rate: !summary
+  service-relations-anomaly:
+    query:
+      metric_type: !eq anomaly_score
+    items:
+      - service-relations-anomaly-score
+      - service-relations-anomaly-immediate
+      - service-relations-anomaly-reference
+  service-relations-anomaly-score:
+    query:
+      immediate: !set
+      reference: !set
+    keys:
+      - immediate
+      - reference
+    metrics:
+      trace_duration_score: !scalar
+      trace_busy_score: !scalar
+      trace_call_rate_score: !scalar
+      trace_error_rate_score: !scalar
+  service-relations-anomaly-immediate:
+    query:
+      immediate: !set
+      reference: !unset
+    keys:
+      - immediate
+    metrics:
+      trace_duration_count: !scalar
+      trace_duration_mean: !scalar
+      trace_duration_ci: !scalar
+      trace_busy_count: !scalar
+      trace_busy_mean: !scalar
+      trace_busy_ci: !scalar
+      trace_call_rate_count: !scalar
+      trace_call_rate_mean: !scalar
+      trace_call_rate_ci: !scalar
+      trace_error_rate_count: !scalar
+      trace_error_rate_mean: !scalar
+      trace_error_rate_ci: !scalar
+  service-relations-anomaly-reference:
+    query:
+      immediate: !unset
+      reference: !set
+    keys:
+      - reference
+    metrics:
+      trace_duration_count: !scalar
+      trace_duration_mean: !scalar
+      trace_duration_ci: !scalar
+      trace_busy_count: !scalar
+      trace_busy_mean: !scalar
+      trace_busy_ci: !scalar
+      trace_call_rate_count: !scalar
+      trace_call_rate_mean: !scalar
+      trace_call_rate_ci: !scalar
+      trace_error_rate_count: !scalar
+      trace_error_rate_mean: !scalar
+      trace_error_rate_ci: !scalar
+  service-relations-welford:
+    query:
+      metric_type: !eq welford
+    metrics:
+      trace_busy_count: !scalar
+        type: counter
+      trace_busy_m2: !scalar
+        type: gauge
+      trace_busy_mean: !scalar
+        type: gauge
+      trace_call_rate_count: !scalar
+        type: counter
+      trace_call_rate_m2: !scalar
+        type: gauge
+      trace_call_rate_mean: !scalar
+        type: gauge
+      trace_duration_count: !scalar
+        type: counter
+      trace_duration_m2: !scalar
+        type: gauge
+      trace_duration_mean: !scalar
+        type: gauge
+      trace_error_rate_count: !scalar
+        type: counter
+      trace_error_rate_m2: !scalar
+        type: gauge
+      trace_error_rate_mean: !scalar
+        type: gauge

@@ -1,0 +1,33 @@
+################################################################################
+# Copyright ContinuousC. Licensed under the "Elastic License 2.0".             #
+################################################################################
+
+!custom
+alert: pod-memory-usage
+annotations:
+  description:
+  runbook_url:
+  summary: "pod {{ $$labels.namespace }} : {{ $$labels.pod }} has high memory usage ($value > $params.min)"
+spec:
+  item: kubelet-metrics-cadvisor:podOtherMetrics
+  expr: container_memory_working_set_bytes > ${min(B)}
+  value_unit: B
+  params:
+    min: !quantity
+      kind: threshold
+      type: !quantity
+        dimension: information
+        units: ["B", "kB", "MB", "GB", "TB"]
+        decimals: 3
+default:
+  for: 15m
+  labels: {}
+  selectors: {}
+  params:
+    instance: "worst"
+    params: {}
+    thresholds:
+      warning:
+        min:
+          value: 1
+          unit: "GB"

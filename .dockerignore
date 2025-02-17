@@ -1,0 +1,33 @@
+_~
+\#_#
+.env
+.devspace
+
+# Logs
+
+logs
+_.log_
+
+node_modules
+dist
+dist-ssr
+\*.local
+target
+charts
+
+# Editor directories and files
+
+.idea
+.DS_Store
+_.suo
+_.ntvs\*
+_.njsproj
+_.sln
+\*.sw?
+
+DBDAEMON
+Frontend
+Chart
+JaegerDiscovery
+PrometheusSchema
+RelationGraph

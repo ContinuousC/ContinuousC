@@ -1,0 +1,125 @@
+################################################################################
+# Copyright ContinuousC. Licensed under the "Elastic License 2.0".             #
+################################################################################
+
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: ca-issuer
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "0"
+    helm.sh/hook: pre-install
+    helm.sh/hook-weight: "0"
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: opensearch-ca
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "1"
+    helm.sh/hook: pre-install
+    helm.sh/hook-weight: "1"
+spec:
+  secretName: opensearch-ca
+  duration: 2160h0m0s # 90d
+  renewBefore: 360h0m0s # 15d
+  subject:
+    organizations:
+      - ContinuousC
+  commonName: OpenSearch CA
+  isCA: true
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS8
+    size: 2048
+  issuerRef:
+    name: ca-issuer
+    kind: Issuer
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: opensearch-issuer
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "2"
+    helm.sh/hook: pre-install
+    helm.sh/hook-weight: "2"
+spec:
+  ca:
+    secretName: opensearch-ca
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: opensearch-tls
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "3"
+    helm.sh/hook: pre-install
+    helm.sh/hook-weight: "3"
+spec:
+  secretName: opensearch-tls
+  duration: 2160h0m0s # 90d
+  renewBefore: 360h0m0s # 15d
+  subject:
+    organizations:
+      - ContinuousC
+  commonName: OpenSearch Node
+  # isCA: false
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS8
+    size: 2048
+  # usages:
+  #   - server auth
+  #   - client auth
+  dnsNames:
+    - opensearch-cluster-master-headless
+    - opensearch-cluster-master
+    - opensearch-cluster-master-0
+    - opensearch-cluster-master-1
+    - opensearch-cluster-master-2
+    - localhost
+  issuerRef:
+    name: opensearch-issuer
+    kind: Issuer
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: opensearch-admin
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "3"
+    helm.sh/hook: pre-install
+    helm.sh/hook-weight: "3"
+spec:
+  secretName: opensearch-admin
+  duration: 2160h0m0s # 90d
+  renewBefore: 360h0m0s # 15d
+  subject:
+    countries:
+      - BE
+    provinces:
+      - Vlaams Brabant
+    localities:
+      - Leuven
+    organizations:
+      - ContinuousC
+    organizationalUnits:
+      - opensearch
+  commonName: admin
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS8
+    size: 2048
+  usages:
+    - client auth
+  issuerRef:
+    name: opensearch-issuer
+    kind: Issuer
