@@ -34,3 +34,27 @@
 [submodule "LockDebug"]
 	path = LockDebug
 	url = ../LockDebug
+[submodule "Tsify"]
+	path = Tsify
+	url = ../Tsify
+[submodule "Actix-Web"]
+	path = Actix-Web
+	url = ../Actix-Web
+[submodule "Apistos"]
+	path = Apistos
+	url = ../Apistos
+[submodule "ApistosSchemaRs"]
+	path = ApistosSchemaRs
+	url = ../ApistosSchemaRs
+[submodule "SmartAgent"]
+	path = SmartAgent
+	url = ../SmartAgent
+[submodule "Graph"]
+	path = Graph
+	url = ../Graph
+[submodule "Wrapper"]
+	path = Wrapper
+	url = ../Wrapper
+[submodule "PrometheusRemoteWrite"]
+	path = PrometheusRemoteWrite
+	url = ../PrometheusRemoteWrite
