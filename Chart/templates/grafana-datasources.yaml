@@ -54,7 +54,11 @@ stringData:
               field: traceID
               url: "$${__value.raw}"
         secureJsonData:
+          {{ if .Values.continuousc.secrets.opensearch-admin-password }}
+          basicAuthPassword: {{ .Values.continuousc.secrets.opensearch-admin-password }}
+          {{ else }}
           basicAuthPassword: "<opensearch-admin-password>"
+          {{ end }}
   jaeger.yaml: |-
     apiVersion: 1
     datasources:

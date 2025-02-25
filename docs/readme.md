@@ -4,17 +4,49 @@
 
 [![Architecture Overview](ContinuousC%20architecture.svg)](https://excalidraw.com/#json=Nx9X3Iu7My9e-ZXnb8tbt,RszT-6qDpQM8lW01WyUwHw)
 
-## Components
+## Steps
+1. Install external dependencies
+2. Install internal dependencies
+3. Install main chart (Components)
+4. Install k8s discovery chart
 
-### [MetalLB](https://metallb.io/)
+## Dependencies 
+### [MetalLB](https://metallb.io/) - Optional
   
-MetallB is used to create an external load balancer for on prem k8s
-clusters. The configuration for deployment can be found
-[here](https://gitea.contc/ContinuousC/apps/src/branch/main/addons/metallb).
+MetallB is used to create an external load balancer for on prem k8s clusters.
+
+### [Cert-Manager](https://cert-manager.io/)
+
+Certificates management for our dbdaemon and relation graph; and for opensearch.
 
 ### [Traefik](https://doc.traefik.io/traefik/)
 
-Traefik is our ingresscontroller that manage ingress in our cluster.
+Traefik is our ingresscontroller that manage ingress in our cluster.  Make sure to enable http3 access in websecure and set allowCrossNamespace to true for kubernetesCRD, see [helm values example](./external/traefik-values.yaml). Also make sure to create the default TLSStore for the domain that will be set later for c9c chart, and for the keycloak domains.
+
+### [Cortex](https://cortexproject.github.io/cortex-helm-chart/)
+
+Long term storage for Prometheus. See [helm values example](./external/cortex-values.yaml). Change the backend config where needed
+
+Analysis documents:
+
+  - [Storage](Storage.pptx)
+  - [Cortex Authentication and Multi-Tenancy](Cortex%20Authentication%20and%20Multi-Tenancy.pptx)
+
+### Authentication
+Our design decisions can be found [here](Authenticatie.pptx). 
+
+#### Keycloak
+
+We have setup our IAM solution with [Keycloak](https://www.keycloak.org/), see our custom [helm chart](./external/keycloak). Change in templates/recources the password in <>.
+
+#### OIDC-client
+[oidcclient](https://gitea.contc/ContinuousC/Auth/src/branch/main/docs) will handle our authentication flows. Here you can also find on how to configure Keycloak.
+
+### [User Documentation](https://gitea.contc/ContinuousC/Documentation)
+
+We use the framework [docusaurus](https://docusaurus.io/) to create our user documentation. You can find the analysis document [here](User%20Documentation.pptx)
+
+## Components
 
 ### [Frontend](https://gitea.contc/ContinuousC/Frontend/src/branch/main/docs)
 
@@ -69,32 +101,8 @@ value equal or below the reference), and values (much) higher than 1
 indicating an abnormality (current value (at least) x times higher
 than "normal").
 
-### Cortex
-
-Analysis documents:
-
-  - [Storage](Storage.pptx)
-  - [Cortex Authentication and Multi-Tenancy](Cortex%20Authentication%20and%20Multi-Tenancy.pptx)
-
 ### [K8s agent](https://gitea.contc/ContinuousC/K8sDiscovery/src/branch/main/docs)
 
 Consist of a k8s discovery agent to send discovery data to the
 relation graph engine and a prometheus exporter to export metrics to
-our cortex instance.
-
-### Authentication
-
-We have setup our
-[IAM](https://gitea.contc/ContinuousC/IAM/src/branch/main/docs)
-solution with [Keycloak](https://www.keycloak.org/) and have created
-an [oidc
-client](https://gitea.contc/ContinuousC/Auth/src/branch/main/docs) to
-handle our authentication flows.
-
-Our design decisions can be found [here](Authenticatie.pptx)
-
-### [User Documentation](https://gitea.contc/ContinuousC/Documentation)
-
-We use the framework [docusaurus](https://docusaurus.io/) to create
-our user documentation. You can find the analysis document
-[here](User%20Documentation.pptx)
+our cortex instance. This is not part of the main chart, but must be installed on K8s cluster to communicate with the relation graph engine.
