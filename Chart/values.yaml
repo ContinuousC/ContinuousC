@@ -14,6 +14,10 @@ continuousc:
     subDomain: sso
     realm: continuousc
   documentationSubDomain: docs
+  secrets:
+    opensearch-admin-password: ""
+    opensearch-admin-hash-password: ""
+    grafana-postgresql-user-password: ""
   c9c:
     frontend:
       image: frontend

@@ -1,0 +1,11 @@
+providers:
+  kubernetesCRD:
+    allowCrossNamespace: true
+ports:
+  web:
+    redirectTo:
+      port: websecure
+  websecure:
+    http3:
+      enabled: true
+      advertisedPort: 443
