@@ -54,7 +54,8 @@ tenant.pools:
 EOF
 
 # kubectl port-forward -n cortex svc/myminio-console 9443:9443
-# Create bucket cortex
+# Create buckets `cortex`, `alertmanager` and `ruler`
+# Add user `cortex` and assign policies `readwrite` and `consoleAdmin`
 # Edit values/cortex.yaml
 
 helm install cortex --namespace cortex --version 2.5.0 cortex-helm/cortex -f values/cortex.yaml
