@@ -1,9 +1,13 @@
 ```
 export IP_ADDRESS=10.140.222.100
-export KEYCLOAK_POSTGRES_PASSWORD=keyloak_password
-export KEYCLOAK_ADMIN_PASSWORD=keyloak_admin_password
-export KEYCLOAK_SSO_DOMAIN=sso.continuousc.com
-export KEYCLOAK_ADMIN_DOMAIN=admin-sso.continuousc.com
+export PASSWORD=password
+export DOMAIN=continuousc.com
+export SSO_DOMAIN=sso.${DOMAIN}
+export SSO_ADMIN_DOMAIN=admin-sso.${DOMAIN}
+export AUTH_DOMAIN=app.${DOMAIN}
+export OPENSEARCH_ADMIN_HASH_PASSWORD=$(htpasswd -bnBC10 '' $PASSWORD | sed -rne 's/^:(.+)$/\1/p')
+export OIDC_CLIENT_SECRET=
+export DOMAIN_CERT = 
 ```
 
 
@@ -48,6 +52,7 @@ ports.web.redirections.entryPoint:
   schema: https
 ports.websecure.http3.enabled: true
 EOF
+#TODO setup certificates + tls store
 
 helm install minio-operator --namespace minio-operator --create-namespace --version 7.0.0 minio-operator/operator
 helm install minio-tenant --namespace cortex --create-namespace --version 7.0.0 minio-operator/tenant -f- <<EOF
@@ -66,8 +71,9 @@ EOF
 
 helm install cortex --namespace cortex --version 2.5.0 cortex-helm/cortex -f values/cortex.yaml
 
-helm install postgresql --namespace auth --create-namespace bitnami/postgresql --version 16.4.14 -f values/postgres.yaml 
-helm install keycloakx --namespace auth --create-namespace codecentric/keycloakx --version 7.0.1 -f values/keycloak.yaml
+helm install postgresql --namespace auth --create-namespace bitnami/postgresql --version 16.4.14 -f values/postgres.yaml --set auth.password=${PASSWORD}
+#Edit values/keycloak.yaml for KEYCLOAK_ADMIN_PASSWORD, SSO_DOMAIN and SSO_ADMIN_DOMAIN in extraEnv
+helm install keycloakx --namespace auth --create-namespace codecentric/keycloakx --version 7.0.1 -f values/keycloak.yaml --set database.password=${PASSWORD}
 kubectl apply -f- <<EOF
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -80,20 +86,21 @@ spec:
     - websecure
   routes:
     - kind: Rule
-      match: Host(`$KEYCLOAK_ADMIN_DOMAIN`)
+      match: Host(`$SSO_ADMIN_DOMAIN`)
       services:
         - name: keycloak-http
           port: http
     - kind: Rule
-      match: "Host(`$KEYCLOAK_SSO_DOMAIN`)
+      match: "Host(`$SSO_DOMAIN`)
       services:
         - name: keycloak-http
           port: http
 EOF
-helm install oidc-client --namespace auth --create-namespace ghcr.io/continuousc/oidc-client-chart --version 0.0.1 -f values/oidc-client.yaml
 
-helm install continuousc-demo --namespace continuousc-demo --create-namespace docker pull ghcr.io/continuousc/continuousc --version 0.0.5-acc.106 -f values/continuousc.yaml
+helm install oidc-client --namespace auth --create-namespace ghcr.io/continuousc/auth --version 0.0.0-acc.16 -f values/oidc-client.yaml --set auth.domain=${AUTH_DOMAIN} --set auth.oidc.issuer=${SSO_DOMAIN}/realms/continuousc --set auth.secrets.oidc-client-secret=${OIDC_CLIENT_SECRET} --set auth.secrets.keycloak-server-cert=${DOMAIN_CERT}
 
-helm install continuousc-agent --namespace continuousc-agent --create-namespace ghcr.io/continuousc/k8s-discovery-chart --version 0.0.8-acc.30 -f values/continuousc-agent.yaml
+helm install c9c --namespace c9c-demo --create-namespace docker pull ghcr.io/continuousc/continuousc --version 0.0.5-acc.106 --set continuousc.registry=oci://ghcr.io/continuousc --set continuousc.domain=${DOMAIN} --set continuousc.secrets.opensearch-admin-password=${PASSWORD} --set continuousc.secrets.opensearch-admin-hash-password=${OPENSEARCH_ADMIN_HASH_PASSWORD} --set continuousc.secrets.grafana-postgresql-user-password=${PASSWORD}
+
+helm install c9c-agent --namespace c9c-agent --create-namespace ghcr.io/continuousc/k8s-discovery-chart --version 0.0.8-acc.30 -f values/k8s-agent
 
 ```

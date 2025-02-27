@@ -7,6 +7,6 @@ auth:
   enablePostgresUser: false
   username: keycloak
   database: keycloak
-  password: $KEYCLOAK_POSTGRES_PASSWORD
+  password: $PASSWORD
 serviceAccount:
   create: false
