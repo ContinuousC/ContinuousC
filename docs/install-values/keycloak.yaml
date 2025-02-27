@@ -23,7 +23,7 @@ database:
   port: 5432
   database: keycloak
   username: keycloak
-  password: $KEYCLOAK_POSTGRES_PASSWORD
+  password: $PASSWORD
 extraEnv: |
   - name: JAVA_OPTS_APPEND
     value: >-
@@ -33,10 +33,10 @@ extraEnv: |
   - name: KEYCLOAK_ADMIN
     value: admin
   - name: KEYCLOAK_ADMIN_PASSWORD
-    value: &KEYCLOAK_ADMIN_PASSWORD
+    value: $PASSWORD
   - name: KC_HOSTNAME
-    value: $KEYCLOAK_SSO_DOMAIN
+    value: $SSO_DOMAIN
   - name: KC_HOSTNAME_ADMIN
-    value: $KEYCLOAK_ADMIN_DOMAIN
+    value: $SSO_ADMIN_DOMAIN
 serviceAccount:
   create: false
