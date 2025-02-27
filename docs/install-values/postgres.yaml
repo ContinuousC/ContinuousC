@@ -1,0 +1,12 @@
+resources:
+  requests:
+    cpu: "200m"
+    memory: "100Mi"
+fullnameOverride: postgresql
+auth:
+  enablePostgresUser: false
+  username: keycloak
+  database: keycloak
+  password: $KEYCLOAK_POSTGRES_PASSWORD
+serviceAccount:
+  create: false

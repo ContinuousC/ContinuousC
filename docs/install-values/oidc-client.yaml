@@ -1,0 +1,7 @@
+domain: app.continuousc.com
+withRootCa: false
+secrets:
+  oidc-client-secret: ${KEYCLOAK_OIDC_CLIENT_SECRET}
+  keycloak-server-cert: ""
+oidc:
+  issuer: ${KEYCLOAK_SSO_DOMAIN}/realms/continuousc

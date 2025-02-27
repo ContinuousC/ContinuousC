@@ -1,0 +1,42 @@
+fullnameOverride: keycloak
+image:
+  repository: quay.io/phasetwo/phasetwo-keycloak
+  tag: 26.1.2
+command:
+  - "/opt/keycloak/bin/kc.sh"
+  - "start"
+args:
+  - "--spi-email-template-provider=freemarker-plus-mustache"
+  - "--spi-email-template-freemarker-plus-mustache-enabled=true"
+  - "--spi-theme-cache-themes=false"
+resources:
+  requests:
+    cpu: "200m"
+    memory: "100Mi"
+http:
+  relativePath: "/"
+dbchecker:
+  enabled: true
+database:
+  vendor: postgres
+  hostname: postgresql
+  port: 5432
+  database: keycloak
+  username: keycloak
+  password: $KEYCLOAK_POSTGRES_PASSWORD
+extraEnv: |
+  - name: JAVA_OPTS_APPEND
+    value: >-
+      -Djgroups.dns.query=keycloak-headless
+      -XX:MaxRAMPercentage=50.0
+      -Djava.net.preferIPv4Stack=true
+  - name: KEYCLOAK_ADMIN
+    value: admin
+  - name: KEYCLOAK_ADMIN_PASSWORD
+    value: &KEYCLOAK_ADMIN_PASSWORD
+  - name: KC_HOSTNAME
+    value: $KEYCLOAK_SSO_DOMAIN
+  - name: KC_HOSTNAME_ADMIN
+    value: $KEYCLOAK_ADMIN_DOMAIN
+serviceAccount:
+  create: false
