@@ -4,12 +4,6 @@
 
 [![Architecture Overview](ContinuousC%20architecture.svg)](https://excalidraw.com/#json=Nx9X3Iu7My9e-ZXnb8tbt,RszT-6qDpQM8lW01WyUwHw)
 
-## Steps
-1. Install external dependencies
-2. Install internal dependencies
-3. Install main chart (Components)
-4. Install k8s discovery chart
-
 ## Dependencies 
 ### [MetalLB](https://metallb.io/) - Optional
   
@@ -21,11 +15,9 @@ Certificates management for our dbdaemon and relation graph; and for opensearch.
 
 ### [Traefik](https://doc.traefik.io/traefik/)
 
-Traefik is our ingresscontroller that manage ingress in our cluster.  Make sure to enable http3 access in websecure and set allowCrossNamespace to true for kubernetesCRD, see [helm values example](./external/traefik-values.yaml). Also make sure to create the default TLSStore for the domain that will be set later for c9c chart, and for the keycloak domains.
+Traefik is our ingresscontroller that manage ingress in our cluster.
 
 ### [Cortex](https://cortexproject.github.io/cortex-helm-chart/)
-
-Long term storage for Prometheus. See [helm values example](./external/cortex-values.yaml). Change the backend config where needed
 
 Analysis documents:
 
@@ -37,12 +29,12 @@ Our design decisions can be found [here](Authenticatie.pptx).
 
 #### Keycloak
 
-We have setup our IAM solution with [Keycloak](https://www.keycloak.org/), see our custom [helm chart](./external/keycloak). Change in templates/recources the password in <>.
+We have setup our IAM solution with [Keycloak](https://www.keycloak.org/).
 
-#### OIDC-client
+#### OIDC-client (Internal)
 [oidcclient](https://gitea.contc/ContinuousC/Auth/src/branch/main/docs) will handle our authentication flows. Here you can also find on how to configure Keycloak.
 
-### [User Documentation](https://gitea.contc/ContinuousC/Documentation)
+### [User Documentation](https://gitea.contc/ContinuousC/Documentation) (Internal)
 
 We use the framework [docusaurus](https://docusaurus.io/) to create our user documentation. You can find the analysis document [here](User%20Documentation.pptx)
 

@@ -1,5 +1,9 @@
 ```
 export IP_ADDRESS=10.140.222.100
+export KEYCLOAK_POSTGRES_PASSWORD=keyloak_password
+export KEYCLOAK_ADMIN_PASSWORD=keyloak_admin_password
+export KEYCLOAK_SSO_DOMAIN=sso.continuousc.com
+export KEYCLOAK_ADMIN_DOMAIN=admin-sso.continuousc.com
 ```
 
 
@@ -9,6 +13,8 @@ helm repo add jetstack https://charts.jetstack.io
 helm repo add traefik https://traefik.github.io/charts
 helm repo add minio-operator https://operator.min.io
 helm repo add cortex-helm https://cortexproject.github.io/cortex-helm-chart
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo add codecentric https://codecentric.github.io/helm-charts
 ```
 
 ```
@@ -59,4 +65,35 @@ EOF
 # Edit values/cortex.yaml
 
 helm install cortex --namespace cortex --version 2.5.0 cortex-helm/cortex -f values/cortex.yaml
+
+helm install postgresql --namespace auth --create-namespace bitnami/postgresql --version 16.4.14 -f values/postgres.yaml 
+helm install keycloakx --namespace auth --create-namespace codecentric/keycloakx --version 7.0.1 -f values/keycloak.yaml
+kubectl apply -f- <<EOF
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: keycloak
+  namespace: auth
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`$KEYCLOAK_ADMIN_DOMAIN`)
+      services:
+        - name: keycloak-http
+          port: http
+    - kind: Rule
+      match: "Host(`$KEYCLOAK_SSO_DOMAIN`)
+      services:
+        - name: keycloak-http
+          port: http
+EOF
+helm install oidc-client --namespace auth --create-namespace ghcr.io/continuousc/oidc-client-chart --version 0.0.1 -f values/oidc-client.yaml
+
+helm install continuousc-demo --namespace continuousc-demo --create-namespace docker pull ghcr.io/continuousc/continuousc --version 0.0.5-acc.106 -f values/continuousc.yaml
+
+helm install continuousc-agent --namespace continuousc-agent --create-namespace ghcr.io/continuousc/k8s-discovery-chart --version 0.0.8-acc.30 -f values/continuousc-agent.yaml
+
 ```
