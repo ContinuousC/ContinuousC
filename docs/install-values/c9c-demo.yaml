@@ -1,0 +1,5 @@
+continuousc.registry: oci://ghcr.io/continuousc
+continuousc.domain: ${DOMAIN}
+continuousc.secrets.opensearch-admin-password: ${PASSWORD} 
+continuousc.secrets.opensearch-admin-hash-password: ${OPENSEARCH_ADMIN_HASH_PASSWORD}
+continuousc.secrets.grafana-postgresql-user-password: ${PASSWORD}

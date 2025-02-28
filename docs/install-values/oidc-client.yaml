@@ -1,3 +1,7 @@
 auth:
   registry: oci://ghcr.io/continuousc
-  withRootCa: true
+  domain: ${AUTH_DOMAIN}
+  oidc.issuer: ${SSO_DOMAIN}/realms/continuousc
+  secrets:
+    oidc-client-secret: ${OIDC_CLIENT_SECRET}
+    ca-domain: ${CA_DOMAIN_CERT}

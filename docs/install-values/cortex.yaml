@@ -32,7 +32,7 @@ config:
       endpoint: "minio.cortex:443"
       bucket_name: "cortex"
       access_key_id: "cortex"
-      secret_access_key: "GCEC6Mw8DrkJpqaIeGeMmlcAVBlleavQ8X5cyNu9dMxo4A30FpbsZLZjLjYBtemC"
+      secret_access_key: ${MINIO_ACCESS_KEY}
       http:
         insecure_skip_verify: true
     bucket_store:
@@ -51,7 +51,7 @@ config:
       endpoint: "minio.cortex:443"
       bucket_name: "alertmanager"
       access_key_id: "cortex"
-      secret_access_key: "GCEC6Mw8DrkJpqaIeGeMmlcAVBlleavQ8X5cyNu9dMxo4A30FpbsZLZjLjYBtemC"
+      secret_access_key: ${MINIO_ACCESS_KEY}
       http:
         insecure_skip_verify: true
     # backend: local
@@ -63,7 +63,7 @@ config:
       endpoint: "minio.cortex:443"
       bucket_name: "ruler"
       access_key_id: "cortex"
-      secret_access_key: "GCEC6Mw8DrkJpqaIeGeMmlcAVBlleavQ8X5cyNu9dMxo4A30FpbsZLZjLjYBtemC"
+      secret_access_key: ${MINIO_ACCESS_KEY}
       http:
         insecure_skip_verify: true
     # backend: local
